@@ -118,30 +118,73 @@ public class GameFile<T>
 
 	private bool ReadFileFromBytes()
 	{
+		if (PeekFileFromBytes(out T data))
+		{
+			Data = data;
+			ValidData = true;
+			OnFileRead.Invoke(this);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	private bool ReadFileFromJson()
+	{
+		if (PeekFileFromJson(out T data))
+		{
+			Data = data;
+			ValidData = true;
+			OnFileRead.Invoke(this);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	#endregion
+	
+	#region Peek File Functionality
+	public bool PeekFile(out T data)
+	{
+		switch (fileType)
+		{
+			case FileType.Encrypted:
+				return PeekFileFromBytes(out data);
+			case FileType.RawJson:
+				return PeekFileFromJson(out data);
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
+	}
+
+	private bool PeekFileFromBytes(out T data)
+	{
 		if (!File.Exists(dataPath))
 		{
+			data = default;
 			return false;
 		}
 
 		byte[] byteData = File.ReadAllBytes(dataPath);
 		string jsonData = Decrypt(byteData);
-		Data = JsonConvert.DeserializeObject<T>(jsonData);
-		ValidData = true;
-		OnFileRead.Invoke(this);
+		data = JsonConvert.DeserializeObject<T>(jsonData);
 		return true;
 	}
 
-	private bool ReadFileFromJson()
+	private bool PeekFileFromJson(out T data)
 	{
 		if (!File.Exists(jsonPath))
 		{
+			data = default;
 			return false;
 		}
 
 		string fileText = File.ReadAllText(jsonPath);
-		Data = JsonConvert.DeserializeObject<T>(fileText);
-		ValidData = true;
-		OnFileRead.Invoke(this);
+		data = JsonConvert.DeserializeObject<T>(fileText);
 		return true;
 	}
 	#endregion
