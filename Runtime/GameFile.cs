@@ -2,8 +2,6 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 
 /// <summary>
 /// Generic class that can quickly read/write files to the player's <see cref="Application.persistentDataPath"/>.
@@ -17,6 +15,7 @@ public class GameFile<T>
 
 	private readonly string dataPath;
 	private readonly string jsonPath;
+	private readonly Encryption.Encryptor encryptor;
 	private readonly FileType fileType;
 
 	/// <summary>
@@ -40,11 +39,13 @@ public class GameFile<T>
 	/// Create an instance of the game file that can be accessed by other classes.
 	/// </summary>
 	/// <param name="fileName">The name of the file on the disc. Do not include any extensions in this name.</param>
+	/// <param name="encryptor">The method of encryption for the file. Consider using <see cref="Encryption.DefaultEncryptor"/> if your file does not need to be secure.</param>
 	/// <param name="fileType">The type of file this is saved as to the disk.</param>
-	public GameFile(string fileName, FileType fileType = FileType.Encrypted)
+	public GameFile(string fileName, Encryption.Encryptor encryptor, FileType fileType = FileType.Encrypted)
 	{
 		dataPath = $"{Application.persistentDataPath}/{fileName}.dat";
 		jsonPath = $"{Application.persistentDataPath}/{fileName}.json";
+		this.encryptor = encryptor;
 		this.fileType = fileType;
 	}
 
@@ -83,7 +84,7 @@ public class GameFile<T>
 	private void WriteFileAsBytes()
 	{
 		string json = JsonConvert.SerializeObject(Data, Formatting.None);
-		File.WriteAllBytes(dataPath, Encrypt(json));
+		File.WriteAllBytes(dataPath, encryptor.Encrypt(json));
 		OnFileWritten.Invoke(this);
 	}
 
@@ -170,7 +171,7 @@ public class GameFile<T>
 		}
 
 		byte[] byteData = File.ReadAllBytes(dataPath);
-		string jsonData = Decrypt(byteData);
+		string jsonData = encryptor.Decrypt(byteData);
 		data = JsonConvert.DeserializeObject<T>(jsonData);
 		return true;
 	}
@@ -250,7 +251,7 @@ public class GameFile<T>
 		string fileText = File.ReadAllText(jsonPath);
 		T objectData = JsonConvert.DeserializeObject<T>(fileText);
 		string jsonData = JsonConvert.SerializeObject(objectData, Formatting.None);
-		File.WriteAllBytes(dataPath, Encrypt(jsonData));
+		File.WriteAllBytes(dataPath, encryptor.Encrypt(jsonData));
 		return true;
 	}
 
@@ -265,51 +266,11 @@ public class GameFile<T>
 			return false;
 		}
 		
-		string fileText = Decrypt(File.ReadAllBytes(dataPath));
+		string fileText = encryptor.Decrypt(File.ReadAllBytes(dataPath));
 		T objectData = JsonConvert.DeserializeObject<T>(fileText);
 		string jsonData = JsonConvert.SerializeObject(objectData, Formatting.Indented);
 		File.WriteAllText(jsonPath, jsonData);
 		return true;
-	}
-	#endregion
-	
-	#region Encryption
-	// IMPORTANT: These encryption keys are obviously public due to the nature of this package being open source and naively having them be constant.
-	// Please consider a more secure solution if you data is actually important.
-	// The main purpose of this encryption then is to not make the data completely inaccessible, but rather to make it a little more obscure for the average user to modify their game data.
-	// In other words: the alternative here is to store game data in plain text json so at least it is stored as a slightly more secure file.
-	private const string Key = "n7cRY4o5XFbjs44hL68AzDA4hGjAJRhJ";
-	private static readonly byte[] KeyBytes = Encoding.UTF8.GetBytes(Key);
-	private const string InitialValue = "RrbEcXchnNDt4d5r";
-	private static readonly byte[] InitialValueBytes = Encoding.UTF8.GetBytes(InitialValue);
-
-	private static byte[] Encrypt(string message)
-	{
-		using AesManaged aes = new AesManaged();
-		aes.Key = KeyBytes;
-		aes.IV = InitialValueBytes;
-		aes.Padding = PaddingMode.PKCS7;
-		using MemoryStream memoryStream = new MemoryStream();
-		using CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(KeyBytes, InitialValueBytes), CryptoStreamMode.Write);
-		using (StreamWriter streamWriter = new StreamWriter(cryptoStream))
-		{
-			streamWriter.Write(message);
-		}
-		byte[] result = memoryStream.ToArray();
-		return result;
-	}
-
-	private static string Decrypt(byte[] message)
-	{
-		using AesManaged aes = new AesManaged();
-		aes.Key = KeyBytes;
-		aes.IV = InitialValueBytes;
-		aes.Padding = PaddingMode.PKCS7;
-		using MemoryStream memoryStream = new MemoryStream(message);
-		using CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(KeyBytes, InitialValueBytes), CryptoStreamMode.Read);
-		using StreamReader streamReader = new StreamReader(cryptoStream);
-		string result = streamReader.ReadToEnd();
-		return result;
 	}
 	#endregion
 
