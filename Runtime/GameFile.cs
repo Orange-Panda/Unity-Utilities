@@ -11,6 +11,10 @@ using System.Text;
 /// <typeparam name="T">The serializable data that the file represents.</typeparam>
 public class GameFile<T>
 {
+	public event Action<GameFile<T>> OnFileWritten = delegate { };
+	public event Action<GameFile<T>> OnFileRead = delegate { };
+	public event Action<GameFile<T>> OnFileDeleted = delegate { };
+
 	private readonly string dataPath;
 	private readonly string jsonPath;
 	private readonly FileType fileType;
@@ -80,12 +84,14 @@ public class GameFile<T>
 	{
 		string json = JsonConvert.SerializeObject(Data, Formatting.None);
 		File.WriteAllBytes(dataPath, Encrypt(json));
+		OnFileWritten.Invoke(this);
 	}
 
 	private void WriteFileAsJson()
 	{
 		string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented);
 		File.WriteAllText(jsonPath, jsonData);
+		OnFileWritten.Invoke(this);
 	}
 	#endregion
 
@@ -121,6 +127,7 @@ public class GameFile<T>
 		string jsonData = Decrypt(byteData);
 		Data = JsonConvert.DeserializeObject<T>(jsonData);
 		ValidData = true;
+		OnFileRead.Invoke(this);
 		return true;
 	}
 
@@ -134,6 +141,7 @@ public class GameFile<T>
 		string fileText = File.ReadAllText(jsonPath);
 		Data = JsonConvert.DeserializeObject<T>(fileText);
 		ValidData = true;
+		OnFileRead.Invoke(this);
 		return true;
 	}
 	#endregion
@@ -167,6 +175,7 @@ public class GameFile<T>
 		}
 
 		File.Delete(dataPath);
+		OnFileDeleted.Invoke(this);
 		return true;
 	}
 
@@ -178,6 +187,7 @@ public class GameFile<T>
 		}
 
 		File.Delete(jsonPath);
+		OnFileDeleted.Invoke(this);
 		return true;
 	}
 	#endregion
