@@ -15,6 +15,8 @@ public class OverlayManager : MonoBehaviour
 	
 	public OverlayInterface ActiveInterface { get; set; }
 	
+	public event Action InterfaceOpened = delegate { };
+	
 	private void Awake()
 	{
 		lookup = new Dictionary<string, OverlayEntry>();
@@ -73,6 +75,7 @@ public class OverlayManager : MonoBehaviour
 		CloseOpenInterfaces();
 		ActiveInterface = value;
 		value.Open();
+		InterfaceOpened.Invoke();
 	}
 
 	/// <summary>
