@@ -1,0 +1,171 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// Handles an overlay system which is designed to display user input ui during the application.
+/// Useful for interfaces such as inventory, pause menu, game overs, etc.
+/// </summary>
+public class OverlayManager : MonoBehaviour
+{
+	[SerializeField]
+	private OverlayEntry[] overlays = Array.Empty<OverlayEntry>();
+	
+	private Dictionary<string, OverlayEntry> lookup = new Dictionary<string, OverlayEntry>();
+	
+	public OverlayInterface ActiveInterface { get; set; }
+	
+	private void Awake()
+	{
+		lookup = new Dictionary<string, OverlayEntry>();
+		foreach (OverlayEntry entry in overlays)
+		{
+			lookup.Add(entry.key, entry);
+		}
+	}
+
+	private void Start()
+	{
+		ClearInterfaces();
+
+		// Load some overlays immediately if their functionality needs to exist in the scene before its first open request.
+		foreach (OverlayEntry overlay in overlays)
+		{
+			if (overlay.loadImmediately && !overlay.Loaded)
+			{
+				overlay.LoadOverlay(transform);
+			}
+		}
+	}
+
+	//Avoid renaming, used by UI buttons.
+	// ReSharper disable once UnusedMember.Global
+	public void SendCloseRequest()
+	{
+		if (ActiveInterface)
+		{
+			ActiveInterface.RequestClose();
+		}
+	}
+
+	public OverlayInterface GetInterface(string key, bool validate = false)
+	{
+		if (!lookup.TryGetValue(key, out OverlayEntry entry))
+		{
+			if (validate)
+			{
+				Debug.LogError($"Tried to get overlay \"{key}\" but no such overlay was present.");
+			}
+			
+			return null;
+		}
+		
+		if (!entry.Loaded)
+		{
+			entry.LoadOverlay(transform);
+		}
+
+		return entry.Overlay;
+	}
+
+	public void SetActiveInterface(OverlayInterface value)
+	{
+		CloseOpenInterfaces();
+		ActiveInterface = value;
+		value.Open();
+	}
+
+	/// <summary>
+	/// Set the active interface based on it's assigned key in the <see cref="lookup"/>.
+	/// </summary>
+	/// <param name="key">The id defined at the <see cref="OverlayEntry.key"/></param>
+	public void SetActiveInterface(string key)
+	{
+		if (lookup.TryGetValue(key, out OverlayEntry entry))
+		{
+			if (!entry.Loaded)
+			{
+				entry.LoadOverlay(transform);
+			}
+			
+			SetActiveInterface(entry.Overlay);
+		}
+		else
+		{
+			Debug.LogError($"Tried to set overlay \"{key}\" but no such overlay was present.");
+		}
+	}
+
+	/// <summary>
+	/// Close all open interfaces.
+	/// </summary>
+	/// <remarks>
+	/// For internal use. If you need to close all interfaces use <see cref="ClearInterfaces"/> instead.
+	/// </remarks>
+	private void CloseOpenInterfaces()
+	{
+		foreach (OverlayEntry entry in lookup.Values)
+		{
+			if (entry.Loaded && entry.Overlay.IsOpen)
+			{
+				entry.Overlay.Close();
+			}
+		}
+	}
+	
+	/// <summary>
+	/// <b>Immediately</b> close all interfaces that are open.
+	/// </summary>
+	/// <remarks>
+	/// Beware: This will skip the process of <see cref="OverlayInterface.RequestClose"/> and immediately close the interfaces.
+	/// </remarks>
+	public void ClearInterfaces()
+	{
+		CloseOpenInterfaces();
+		ActiveInterface = null;
+	}
+
+	/// <summary>
+	/// A particular overlay that the <see cref="OverlayManager"/> is responsible for.
+	/// </summary>
+	[Serializable]
+	public class OverlayEntry
+	{
+		[Tooltip("The id for this overlay. Used to set it active when there is no direct reference to the interface component.")]
+		public string key;
+		[Tooltip("The prefab to instantiate for the overlay at runtime.")]
+		public GameObject prefab;
+		[Tooltip("Usually overlays are instantiated when they are first opened. Enable this to instantiate them when the overlay manager is first started.")]
+		public bool loadImmediately;
+		
+		/// <summary>
+		/// When true signifies that the <see cref="prefab"/> has been instantiated and is ready to be used.
+		/// </summary>
+		public bool Loaded { get; private set; }
+		/// <summary>
+		/// The <see cref="prefab"/> instance that has been instantiated.
+		/// </summary>
+		public GameObject InstanceObject { get; private set; }
+		public OverlayInterface Overlay { get; private set; }
+
+		public void LoadOverlay(Transform parent)
+		{
+			if (Loaded)
+			{
+				return;
+			}
+
+			InstanceObject = Instantiate(prefab, parent);
+			Overlay = InstanceObject.GetComponent<OverlayInterface>();
+			Loaded = true;
+
+			if (Overlay == null)
+			{
+				Debug.LogError($"Overlay \"{InstanceObject.name}\" does not have a OverlayInterface component.");
+				return;
+			}
+			
+			Overlay.Close();
+		}
+	}
+}
