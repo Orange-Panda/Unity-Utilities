@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// A component that will automatically calculate the correct aspect ratio for an attached <see cref="AspectRatioFitter"/> based on an attached component that inherits <see cref="ILayoutElement"/>.
+/// </summary>
 [RequireComponent(typeof(AspectRatioFitter))]
 public class AspectRatioCalculator : MonoBehaviour
 {
@@ -25,9 +28,13 @@ public class AspectRatioCalculator : MonoBehaviour
 		initialized = true;
 	}
 
+	/// <summary>
+	/// Recalculate the desired aspect ratio for the attached <see cref="AspectRatioFitter"/> based on an attached component that inherits <see cref="ILayoutElement"/>.
+	/// </summary>
 	public void RecalculateAspect()
 	{
 #if UNITY_EDITOR
+		// If calling this message from the editor window it is possible Start(); didn't get the components.
 		GetComponents();
 #endif
 		if (layout != null)

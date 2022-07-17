@@ -2,6 +2,10 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// Abstract base class for an overlay within the <see cref="OverlayManager"/> system.
+/// Inherit from this to create custom behavior for the overlays your application uses.
+/// </summary>
 [RequireComponent(typeof(GraphicRaycaster), typeof(Canvas))]
 public abstract class OverlayInterface : MonoBehaviour
 {

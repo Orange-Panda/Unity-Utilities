@@ -13,8 +13,15 @@ public class OverlayManager : MonoBehaviour
 	
 	private Dictionary<string, OverlayEntry> lookup = new Dictionary<string, OverlayEntry>();
 	
+	/// <summary>
+	/// The current interface set active via <see cref="SetActiveInterface(OverlayInterface)"/>.
+	/// Null if there is no active interface.
+	/// </summary>
 	public OverlayInterface ActiveInterface { get; set; }
 	
+	/// <summary>
+	/// Invoked when an interface is set active via <see cref="SetActiveInterface(OverlayInterface)"/>.
+	/// </summary>
 	public event Action InterfaceOpened = delegate { };
 	
 	private void Awake()
@@ -42,6 +49,12 @@ public class OverlayManager : MonoBehaviour
 
 	//Avoid renaming, used by UI buttons.
 	// ReSharper disable once UnusedMember.Global
+	/// <summary>
+	/// Ask the current <see cref="ActiveInterface"/> to close using <see cref="OverlayInterface.RequestClose"/>.
+	/// </summary>
+	/// <remarks>
+	/// This is useful for close buttons in UI that are independent of a particular overlay.
+	/// </remarks>
 	public void SendCloseRequest()
 	{
 		if (ActiveInterface)
@@ -50,6 +63,12 @@ public class OverlayManager : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Get an interface reference from it's assigned key in the <see cref="lookup"/>.
+	/// </summary>
+	/// <param name="key">The id defined at the <see cref="OverlayEntry.key"/></param>
+	/// <param name="validate">When true, throw an error if no interface was found with that key.</param>
+	/// <returns>The <see cref="OverlayInterface"/> that was found. Null if no entry existed for that key.</returns>
 	public OverlayInterface GetInterface(string key, bool validate = false)
 	{
 		if (!lookup.TryGetValue(key, out OverlayEntry entry))
@@ -70,6 +89,10 @@ public class OverlayManager : MonoBehaviour
 		return entry.Overlay;
 	}
 
+	/// <summary>
+	/// Set the active interface directly from its component reference.
+	/// </summary>
+	/// <param name="value">The interface to set active. Should not be null, use <see cref="ClearInterfaces"/> if you intend to not open any interface.</param>
 	public void SetActiveInterface(OverlayInterface value)
 	{
 		CloseOpenInterfaces();
@@ -151,6 +174,10 @@ public class OverlayManager : MonoBehaviour
 		public GameObject InstanceObject { get; private set; }
 		public OverlayInterface Overlay { get; private set; }
 
+		/// <summary>
+		/// Spawn the overlay instance if it has not already been loaded.
+		/// </summary>
+		/// <param name="parent">The transform of the ui element to make the parent of the created overlay prefab.</param>
 		public void LoadOverlay(Transform parent)
 		{
 			if (Loaded)
