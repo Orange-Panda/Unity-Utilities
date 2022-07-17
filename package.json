@@ -1,8 +1,8 @@
 {
   "name": "com.lmirman.utilities",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "displayName": "Unity Utilities",
-  "description": "An all in one package that solves many common unity development needs.",
+  "description": "An all in one package that handles many common unity development needs.",
   "hideInEditor": true,
   "keywords": [
     "utilities",

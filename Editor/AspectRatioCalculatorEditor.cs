@@ -1,19 +1,22 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(AspectRatioCalculator))]
-public class AspectRatioCalculatorEditor : Editor
+namespace LMirman.Utilities
 {
-	public override void OnInspectorGUI()
+	[CustomEditor(typeof(AspectRatioCalculator))]
+	public class AspectRatioCalculatorEditor : Editor
 	{
-		base.OnInspectorGUI();
-		if (GUILayout.Button("Recalculate Aspect"))
+		public override void OnInspectorGUI()
 		{
-			foreach (GameObject selectedObject in Selection.gameObjects)
+			base.OnInspectorGUI();
+			if (GUILayout.Button("Recalculate Aspect"))
 			{
-				if (selectedObject.TryGetComponent(out AspectRatioCalculator calculator))
+				foreach (GameObject selectedObject in Selection.gameObjects)
 				{
-					calculator.RecalculateAspect();
+					if (selectedObject.TryGetComponent(out AspectRatioCalculator calculator))
+					{
+						calculator.RecalculateAspect();
+					}
 				}
 			}
 		}

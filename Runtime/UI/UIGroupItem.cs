@@ -1,14 +1,17 @@
 using UnityEngine;
 
-/// <summary>
-/// A ui element to fill in a <see cref="UIGroup{T}"/> with.
-/// </summary>
-public abstract class UIGroupItem : MonoBehaviour
+namespace LMirman.Utilities
 {
-	[SerializeField]
-	protected string key;
+	/// <summary>
+	/// A ui element to fill in a <see cref="UIGroup{T}"/> with.
+	/// </summary>
+	public abstract class UIGroupItem : MonoBehaviour
+	{
+		[SerializeField]
+		protected string key;
 
-	public string Key => key;
+		public string Key => key;
 
-	public abstract void SetActive(bool value);
+		public abstract void SetActive(bool value);
+	}
 }

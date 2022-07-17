@@ -1,103 +1,107 @@
+using LMirman.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// An asset based dictionary that pairs a string key with an arbitrary <see cref="T"/> object.
-/// </summary>
-/// <typeparam name="T">The object type to use for the values in the lookup table.</typeparam>
-public class LookupTable<T> where T : ILookupCollectionEntry
+namespace LMirman.Utilities
 {
-	private readonly string resourcePath;
+	/// <summary>
+	/// An asset based dictionary that pairs a string key with an arbitrary <see cref="T"/> object.
+	/// </summary>
+	/// <typeparam name="T">The object type to use for the values in the lookup table.</typeparam>
+	public class LookupTable<T> where T : ILookupCollectionEntry
+	{
+		private readonly string resourcePath;
 	
-	/// <summary>
-	/// The lookup table asset in the project.
-	/// </summary>
-	/// <remarks>Avoid utilizing this at runtime! The main purpose of this being public to enable you to write editor scripts to modify the asset itself.</remarks>
-	public LookupCollectionAsset<T> Asset { get; private set; }
-	public Dictionary<string, T> Lookup { get; } = new Dictionary<string, T>();
-	public List<T> List { get; } = new List<T>();
+		/// <summary>
+		/// The lookup table asset in the project.
+		/// </summary>
+		/// <remarks>Avoid utilizing this at runtime! The main purpose of this being public to enable you to write editor scripts to modify the asset itself.</remarks>
+		public LookupCollectionAsset<T> Asset { get; private set; }
+		public Dictionary<string, T> Lookup { get; } = new Dictionary<string, T>();
+		public List<T> List { get; } = new List<T>();
 
-	/// <summary>
-	/// Create an instance of a lookup table based on a particular lookup table asset.
-	/// </summary>
-	/// <param name="resourcePath">The path to use when loading the asset from resources using <see cref="Resources.Load(string)"/></param>
-	/// <param name="immediateReload">Should the constructor automatically call <see cref="ReloadResource"/>?</param>
-	public LookupTable(string resourcePath, bool immediateReload = false)
-	{
-		this.resourcePath = resourcePath;
-
-		if (immediateReload)
+		/// <summary>
+		/// Create an instance of a lookup table based on a particular lookup table asset.
+		/// </summary>
+		/// <param name="resourcePath">The path to use when loading the asset from resources using <see cref="Resources.Load(string)"/></param>
+		/// <param name="immediateReload">Should the constructor automatically call <see cref="ReloadResource"/>?</param>
+		public LookupTable(string resourcePath, bool immediateReload = false)
 		{
-			ReloadResource();
-		}
-	}
+			this.resourcePath = resourcePath;
 
-	/// <summary>
-	/// Reload the <see cref="Asset"/> from the resources folder, resetting the entries in the <see cref="Lookup"/> and <see cref="List"/> collections.
-	/// </summary>
-	public void ReloadResource()
-	{
-		Lookup.Clear();
-		List.Clear();
-
-		Asset = Resources.Load<LookupCollectionAsset<T>>(resourcePath);
-		if (Asset != null)
-		{
-			foreach (T entry in Asset.Entries)
+			if (immediateReload)
 			{
-				if (Lookup.ContainsKey(entry.Key))
-				{
-					Debug.LogError($"Duplicate key found with value {entry.Key}");
-					continue;
-				}
-				
-				Lookup.Add(entry.Key, entry);
-				List.Add(entry);
+				ReloadResource();
 			}
 		}
-		else
-		{
-			Debug.LogError($"No lookup table found at: {resourcePath}");
-		}
-	}
 
-	/// <summary>
-	/// Check if a key is matches the recommended guidelines for key syntax.
-	/// </summary>
-	/// <param name="key">The key to verify the syntax of</param>
-	/// <param name="message">A message indicating any syntax problems that were encountered.</param>
-	/// <returns>True if the key was validated with no errors found, false if the key has a syntax problem.</returns>
-	public static bool ValidateKey(string key, out string message)
-	{
-		message = string.Empty;
-		if (string.IsNullOrWhiteSpace(key))
+		/// <summary>
+		/// Reload the <see cref="Asset"/> from the resources folder, resetting the entries in the <see cref="Lookup"/> and <see cref="List"/> collections.
+		/// </summary>
+		public void ReloadResource()
 		{
-			message = "The item key should not be null or empty.";
-			return false;
+			Lookup.Clear();
+			List.Clear();
+
+			Asset = Resources.Load<LookupCollectionAsset<T>>(resourcePath);
+			if (Asset != null)
+			{
+				foreach (T entry in Asset.Entries)
+				{
+					if (Lookup.ContainsKey(entry.Key))
+					{
+						Debug.LogError($"Duplicate key found with value {entry.Key}");
+						continue;
+					}
+				
+					Lookup.Add(entry.Key, entry);
+					List.Add(entry);
+				}
+			}
+			else
+			{
+				Debug.LogError($"No lookup table found at: {resourcePath}");
+			}
 		}
+
+		/// <summary>
+		/// Check if a key is matches the recommended guidelines for key syntax.
+		/// </summary>
+		/// <param name="key">The key to verify the syntax of</param>
+		/// <param name="message">A message indicating any syntax problems that were encountered.</param>
+		/// <returns>True if the key was validated with no errors found, false if the key has a syntax problem.</returns>
+		public static bool ValidateKey(string key, out string message)
+		{
+			message = string.Empty;
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				message = "The item key should not be null or empty.";
+				return false;
+			}
 		
-		bool value = true;
-		if (key.Contains(' '))
-		{
-			message += "The item key should not contain any spaces.\n";
-			value = false;
-		}
+			bool value = true;
+			if (key.Contains(' '))
+			{
+				message += "The item key should not contain any spaces.\n";
+				value = false;
+			}
 
-		if (key.Any(char.IsUpper))
-		{
-			message += "The item key should not have any capital letters in it.\n";
-			value = false;
-		}
+			if (key.Any(char.IsUpper))
+			{
+				message += "The item key should not have any capital letters in it.\n";
+				value = false;
+			}
 
-		if (key.Any(letter => !char.IsLetterOrDigit(letter) && letter != '_' && letter != '-'))
-		{
-			message += "The item key should not contain any non-alphanumeric characters.\n";
-			value = false;
-		}
+			if (key.Any(letter => !char.IsLetterOrDigit(letter) && letter != '_' && letter != '-'))
+			{
+				message += "The item key should not contain any non-alphanumeric characters.\n";
+				value = false;
+			}
 
-		message = message.TrimEnd('\n');
-		return value;
+			message = message.TrimEnd('\n');
+			return value;
+		}
 	}
 }
 

@@ -2,200 +2,203 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Handles an overlay system which is designed to display user input ui during the application.
-/// Useful for interfaces such as inventory, pause menu, game overs, etc.
-/// </summary>
-public class OverlayManager : MonoBehaviour
+namespace LMirman.Utilities
 {
-	[SerializeField]
-	private OverlayEntry[] overlays = Array.Empty<OverlayEntry>();
-	
-	private Dictionary<string, OverlayEntry> lookup = new Dictionary<string, OverlayEntry>();
-	
 	/// <summary>
-	/// The current interface set active via <see cref="SetActiveInterface(OverlayInterface)"/>.
-	/// Null if there is no active interface.
+	/// Handles an overlay system which is designed to display user input ui during the application.
+	/// Useful for interfaces such as inventory, pause menu, game overs, etc.
 	/// </summary>
-	public OverlayInterface ActiveInterface { get; set; }
-	
-	/// <summary>
-	/// Invoked when an interface is set active via <see cref="SetActiveInterface(OverlayInterface)"/>.
-	/// </summary>
-	public event Action InterfaceOpened = delegate { };
-	
-	private void Awake()
+	public class OverlayManager : MonoBehaviour
 	{
-		lookup = new Dictionary<string, OverlayEntry>();
-		foreach (OverlayEntry entry in overlays)
+		[SerializeField]
+		private OverlayEntry[] overlays = Array.Empty<OverlayEntry>();
+	
+		private Dictionary<string, OverlayEntry> lookup = new Dictionary<string, OverlayEntry>();
+	
+		/// <summary>
+		/// The current interface set active via <see cref="SetActiveInterface(OverlayInterface)"/>.
+		/// Null if there is no active interface.
+		/// </summary>
+		public OverlayInterface ActiveInterface { get; set; }
+	
+		/// <summary>
+		/// Invoked when an interface is set active via <see cref="SetActiveInterface(OverlayInterface)"/>.
+		/// </summary>
+		public event Action InterfaceOpened = delegate { };
+	
+		private void Awake()
 		{
-			lookup.Add(entry.key, entry);
-		}
-	}
-
-	private void Start()
-	{
-		ClearInterfaces();
-
-		// Load some overlays immediately if their functionality needs to exist in the scene before its first open request.
-		foreach (OverlayEntry overlay in overlays)
-		{
-			if (overlay.loadImmediately && !overlay.Loaded)
+			lookup = new Dictionary<string, OverlayEntry>();
+			foreach (OverlayEntry entry in overlays)
 			{
-				overlay.LoadOverlay(transform);
+				lookup.Add(entry.key, entry);
 			}
 		}
-	}
 
-	//Avoid renaming, used by UI buttons.
-	// ReSharper disable once UnusedMember.Global
-	/// <summary>
-	/// Ask the current <see cref="ActiveInterface"/> to close using <see cref="OverlayInterface.RequestClose"/>.
-	/// </summary>
-	/// <remarks>
-	/// This is useful for close buttons in UI that are independent of a particular overlay.
-	/// </remarks>
-	public void SendCloseRequest()
-	{
-		if (ActiveInterface)
+		private void Start()
 		{
-			ActiveInterface.RequestClose();
-		}
-	}
+			ClearInterfaces();
 
-	/// <summary>
-	/// Get an interface reference from it's assigned key in the <see cref="lookup"/>.
-	/// </summary>
-	/// <param name="key">The id defined at the <see cref="OverlayEntry.key"/></param>
-	/// <param name="validate">When true, throw an error if no interface was found with that key.</param>
-	/// <returns>The <see cref="OverlayInterface"/> that was found. Null if no entry existed for that key.</returns>
-	public OverlayInterface GetInterface(string key, bool validate = false)
-	{
-		if (!lookup.TryGetValue(key, out OverlayEntry entry))
-		{
-			if (validate)
+			// Load some overlays immediately if their functionality needs to exist in the scene before its first open request.
+			foreach (OverlayEntry overlay in overlays)
 			{
-				Debug.LogError($"Tried to get overlay \"{key}\" but no such overlay was present.");
+				if (overlay.loadImmediately && !overlay.Loaded)
+				{
+					overlay.LoadOverlay(transform);
+				}
 			}
+		}
+
+		//Avoid renaming, used by UI buttons.
+		// ReSharper disable once UnusedMember.Global
+		/// <summary>
+		/// Ask the current <see cref="ActiveInterface"/> to close using <see cref="OverlayInterface.RequestClose"/>.
+		/// </summary>
+		/// <remarks>
+		/// This is useful for close buttons in UI that are independent of a particular overlay.
+		/// </remarks>
+		public void SendCloseRequest()
+		{
+			if (ActiveInterface)
+			{
+				ActiveInterface.RequestClose();
+			}
+		}
+
+		/// <summary>
+		/// Get an interface reference from it's assigned key in the <see cref="lookup"/>.
+		/// </summary>
+		/// <param name="key">The id defined at the <see cref="OverlayEntry.key"/></param>
+		/// <param name="validate">When true, throw an error if no interface was found with that key.</param>
+		/// <returns>The <see cref="OverlayInterface"/> that was found. Null if no entry existed for that key.</returns>
+		public OverlayInterface GetInterface(string key, bool validate = false)
+		{
+			if (!lookup.TryGetValue(key, out OverlayEntry entry))
+			{
+				if (validate)
+				{
+					Debug.LogError($"Tried to get overlay \"{key}\" but no such overlay was present.");
+				}
 			
-			return null;
-		}
+				return null;
+			}
 		
-		if (!entry.Loaded)
-		{
-			entry.LoadOverlay(transform);
-		}
-
-		return entry.Overlay;
-	}
-
-	/// <summary>
-	/// Set the active interface directly from its component reference.
-	/// </summary>
-	/// <param name="value">The interface to set active. Should not be null, use <see cref="ClearInterfaces"/> if you intend to not open any interface.</param>
-	public void SetActiveInterface(OverlayInterface value)
-	{
-		CloseOpenInterfaces();
-		ActiveInterface = value;
-		value.Open();
-		InterfaceOpened.Invoke();
-	}
-
-	/// <summary>
-	/// Set the active interface based on it's assigned key in the <see cref="lookup"/>.
-	/// </summary>
-	/// <param name="key">The id defined at the <see cref="OverlayEntry.key"/></param>
-	public void SetActiveInterface(string key)
-	{
-		if (lookup.TryGetValue(key, out OverlayEntry entry))
-		{
 			if (!entry.Loaded)
 			{
 				entry.LoadOverlay(transform);
 			}
-			
-			SetActiveInterface(entry.Overlay);
-		}
-		else
-		{
-			Debug.LogError($"Tried to set overlay \"{key}\" but no such overlay was present.");
-		}
-	}
 
-	/// <summary>
-	/// Close all open interfaces.
-	/// </summary>
-	/// <remarks>
-	/// For internal use. If you need to close all interfaces use <see cref="ClearInterfaces"/> instead.
-	/// </remarks>
-	private void CloseOpenInterfaces()
-	{
-		foreach (OverlayEntry entry in lookup.Values)
+			return entry.Overlay;
+		}
+
+		/// <summary>
+		/// Set the active interface directly from its component reference.
+		/// </summary>
+		/// <param name="value">The interface to set active. Should not be null, use <see cref="ClearInterfaces"/> if you intend to not open any interface.</param>
+		public void SetActiveInterface(OverlayInterface value)
 		{
-			if (entry.Loaded && entry.Overlay.IsOpen)
+			CloseOpenInterfaces();
+			ActiveInterface = value;
+			value.Open();
+			InterfaceOpened.Invoke();
+		}
+
+		/// <summary>
+		/// Set the active interface based on it's assigned key in the <see cref="lookup"/>.
+		/// </summary>
+		/// <param name="key">The id defined at the <see cref="OverlayEntry.key"/></param>
+		public void SetActiveInterface(string key)
+		{
+			if (lookup.TryGetValue(key, out OverlayEntry entry))
 			{
-				entry.Overlay.Close();
+				if (!entry.Loaded)
+				{
+					entry.LoadOverlay(transform);
+				}
+			
+				SetActiveInterface(entry.Overlay);
+			}
+			else
+			{
+				Debug.LogError($"Tried to set overlay \"{key}\" but no such overlay was present.");
 			}
 		}
-	}
+
+		/// <summary>
+		/// Close all open interfaces.
+		/// </summary>
+		/// <remarks>
+		/// For internal use. If you need to close all interfaces use <see cref="ClearInterfaces"/> instead.
+		/// </remarks>
+		private void CloseOpenInterfaces()
+		{
+			foreach (OverlayEntry entry in lookup.Values)
+			{
+				if (entry.Loaded && entry.Overlay.IsOpen)
+				{
+					entry.Overlay.Close();
+				}
+			}
+		}
 	
-	/// <summary>
-	/// <b>Immediately</b> close all interfaces that are open.
-	/// </summary>
-	/// <remarks>
-	/// Beware: This will skip the process of <see cref="OverlayInterface.RequestClose"/> and immediately close the interfaces.
-	/// </remarks>
-	public void ClearInterfaces()
-	{
-		CloseOpenInterfaces();
-		ActiveInterface = null;
-	}
-
-	/// <summary>
-	/// A particular overlay that the <see cref="OverlayManager"/> is responsible for.
-	/// </summary>
-	[Serializable]
-	public class OverlayEntry
-	{
-		[Tooltip("The id for this overlay. Used to set it active when there is no direct reference to the interface component.")]
-		public string key;
-		[Tooltip("The prefab to instantiate for the overlay at runtime.")]
-		public GameObject prefab;
-		[Tooltip("Usually overlays are instantiated when they are first opened. Enable this to instantiate them when the overlay manager is first started.")]
-		public bool loadImmediately;
-		
 		/// <summary>
-		/// When true signifies that the <see cref="prefab"/> has been instantiated and is ready to be used.
+		/// <b>Immediately</b> close all interfaces that are open.
 		/// </summary>
-		public bool Loaded { get; private set; }
-		/// <summary>
-		/// The <see cref="prefab"/> instance that has been instantiated.
-		/// </summary>
-		public GameObject InstanceObject { get; private set; }
-		public OverlayInterface Overlay { get; private set; }
-
-		/// <summary>
-		/// Spawn the overlay instance if it has not already been loaded.
-		/// </summary>
-		/// <param name="parent">The transform of the ui element to make the parent of the created overlay prefab.</param>
-		public void LoadOverlay(Transform parent)
+		/// <remarks>
+		/// Beware: This will skip the process of <see cref="OverlayInterface.RequestClose"/> and immediately close the interfaces.
+		/// </remarks>
+		public void ClearInterfaces()
 		{
-			if (Loaded)
-			{
-				return;
-			}
+			CloseOpenInterfaces();
+			ActiveInterface = null;
+		}
 
-			InstanceObject = Instantiate(prefab, parent);
-			Overlay = InstanceObject.GetComponent<OverlayInterface>();
-			Loaded = true;
+		/// <summary>
+		/// A particular overlay that the <see cref="OverlayManager"/> is responsible for.
+		/// </summary>
+		[Serializable]
+		public class OverlayEntry
+		{
+			[Tooltip("The id for this overlay. Used to set it active when there is no direct reference to the interface component.")]
+			public string key;
+			[Tooltip("The prefab to instantiate for the overlay at runtime.")]
+			public GameObject prefab;
+			[Tooltip("Usually overlays are instantiated when they are first opened. Enable this to instantiate them when the overlay manager is first started.")]
+			public bool loadImmediately;
+		
+			/// <summary>
+			/// When true signifies that the <see cref="prefab"/> has been instantiated and is ready to be used.
+			/// </summary>
+			public bool Loaded { get; private set; }
+			/// <summary>
+			/// The <see cref="prefab"/> instance that has been instantiated.
+			/// </summary>
+			public GameObject InstanceObject { get; private set; }
+			public OverlayInterface Overlay { get; private set; }
 
-			if (Overlay == null)
+			/// <summary>
+			/// Spawn the overlay instance if it has not already been loaded.
+			/// </summary>
+			/// <param name="parent">The transform of the ui element to make the parent of the created overlay prefab.</param>
+			public void LoadOverlay(Transform parent)
 			{
-				Debug.LogError($"Overlay \"{InstanceObject.name}\" does not have a OverlayInterface component.");
-				return;
-			}
+				if (Loaded)
+				{
+					return;
+				}
+
+				InstanceObject = Instantiate(prefab, parent);
+				Overlay = InstanceObject.GetComponent<OverlayInterface>();
+				Loaded = true;
+
+				if (Overlay == null)
+				{
+					Debug.LogError($"Overlay \"{InstanceObject.name}\" does not have a OverlayInterface component.");
+					return;
+				}
 			
-			Overlay.Close();
+				Overlay.Close();
+			}
 		}
 	}
 }
