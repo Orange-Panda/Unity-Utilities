@@ -57,12 +57,7 @@ namespace LMirman.Utilities
 		public virtual void Open()
 		{
 			IsOpen = true;
-			canvas.enabled = true;
-			raycaster.enabled = true;
-			if (container)
-			{
-				container.SetActive(true);
-			}
+			SetVisualActive(true);
 
 			if (selectable)
 			{
@@ -76,12 +71,7 @@ namespace LMirman.Utilities
 		public virtual void Close()
 		{
 			IsOpen = false;
-			canvas.enabled = false;
-			raycaster.enabled = false;
-			if (container)
-			{
-				container.SetActive(false);
-			}
+			SetVisualActive(false);
 
 			if (overlayManager.ActiveInterface == this)
 			{
@@ -89,6 +79,20 @@ namespace LMirman.Utilities
 			}
 
 			EventSystem.current.SetSelectedGameObject(null);
+		}
+
+		/// <summary>
+		/// Invoked by the overlay system to set the visual state of the overlay.
+		/// </summary>
+		/// <param name="value">If the overlay should be visible or not.</param>
+		internal virtual void SetVisualActive(bool value)
+		{
+			canvas.enabled = value;
+			raycaster.enabled = value;
+			if (container)
+			{
+				container.SetActive(value);
+			}
 		}
 
 		/// <summary>

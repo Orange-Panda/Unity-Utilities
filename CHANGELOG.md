@@ -3,6 +3,17 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2022-08-03
+
+### Added
+- Added `SetVisualActive(bool)` method to OverlayInterface which is called during open, close, and load.
+
+### Changed
+- `Close()` on OverlayInterface is no longer called by the OverlayManager when a panel is loaded. Thus, `Open()` is now guaranteed to be invoked before `Close()`.
+
+### Fixed
+- Fixed a typo in PanelGroup
+
 ## [1.0.0] - 2022-07-16
 
 ### Added

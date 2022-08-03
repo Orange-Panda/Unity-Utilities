@@ -23,7 +23,7 @@ namespace LMirman.Utilities
 		/// <summary>
 		/// True when there is a panel active and it does <b>not</b> have a parent node to return to.
 		/// </summary>
-		public bool HasOphanPanel => currentItem != null && currentItem.ParentPanel == null;
+		public bool HasOrphanPanel => currentItem != null && currentItem.ParentPanel == null;
 
 		/// <summary>
 		/// Tells the currently active panel to return to the parent node.

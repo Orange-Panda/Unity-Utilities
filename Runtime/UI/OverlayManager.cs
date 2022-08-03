@@ -197,7 +197,7 @@ namespace LMirman.Utilities
 					return;
 				}
 			
-				Overlay.Close();
+				Overlay.SetVisualActive(false);
 			}
 		}
 	}
