@@ -80,7 +80,27 @@ namespace LMirman.Utilities
 			Pools[poolable.template].DisposeObject(poolable);
 		}
 
-		private class Pool
+		public static Pool GetPool(GameObject template)
+		{
+			VerifyLookupPresence(template);
+			return Pools[template];
+		}
+
+		/// <summary>
+		/// Goes through every single <see cref="Pool"/> and disposes of all currently idle objects.
+		/// </summary>
+		/// <remarks>
+		/// Not necessary to utilize unless your application has rapidly changing object demands.
+		/// </remarks>
+		public static void DisposeAllIdlePools()
+		{
+			foreach (Pool pool in Pools.Values)
+			{
+				pool.DisposeIdle();
+			}
+		}
+
+		public class Pool
 		{
 			/// <summary>
 			/// All of the pooled objects regardless of active status
@@ -100,6 +120,10 @@ namespace LMirman.Utilities
 			private readonly PoolSettings settings;
 			private readonly GameObject template;
 
+			public int ObjectCount => populatedObjects.Count;
+			public int ActiveCount => activeObjects.Count;
+			public int IdleCount => idleObjects.Count;
+
 			public Pool(GameObject template)
 			{
 				this.template = template;
@@ -115,7 +139,7 @@ namespace LMirman.Utilities
 				}
 			}
 
-			public Poolable GetObject()
+			internal Poolable GetObject()
 			{
 				if (idleObjects.Count > 0)
 				{
@@ -195,7 +219,7 @@ namespace LMirman.Utilities
 			/// Return an object to the <see cref="idleObjects"/> when it is done being used in the scene.
 			/// </summary>
 			/// <param name="poolable">The object to return to the pool.</param>
-			public void ReturnObject(Poolable poolable)
+			internal void ReturnObject(Poolable poolable)
 			{
 				if (!populatedObjects.Contains(poolable))
 				{
@@ -225,11 +249,49 @@ namespace LMirman.Utilities
 			/// This should only be done when the object is destined to be destroyed, otherwise it might be permanently in the scene.
 			/// </summary>
 			/// <param name="poolable">The object to dispose from the pool.</param>
-			public void DisposeObject(Poolable poolable)
+			internal void DisposeObject(Poolable poolable)
 			{
 				populatedObjects.Remove(poolable);
 				activeObjects.Remove(poolable);
 				idleObjects.Remove(poolable);
+			}
+
+			/// <summary>
+			/// Dispose all <see cref="idleObjects"/>.
+			/// </summary>
+			public void DisposeIdle()
+			{
+				Queue<Poolable> invokeTargets = new Queue<Poolable>();
+				foreach (Poolable poolable in idleObjects)
+				{
+					invokeTargets.Enqueue(poolable);
+				}
+				
+				while (invokeTargets.Count > 0)
+				{
+					Poolable target = invokeTargets.Dequeue();
+					Object.Destroy(target.gameObject);
+				}
+			}
+			
+			/// <summary>
+			/// Return all <see cref="activeObjects"/> to the <see cref="idleObjects"/> and then dispose of everything.
+			/// </summary>
+			public void DisposeAll()
+			{
+				Queue<Poolable> invokeTargets = new Queue<Poolable>();
+				foreach (Poolable poolable in activeObjects)
+				{
+					invokeTargets.Enqueue(poolable);
+				}
+
+				while (invokeTargets.Count > 0)
+				{
+					Poolable target = invokeTargets.Dequeue();
+					target.Return();
+				}
+				
+				DisposeIdle();
 			}
 		}
 
