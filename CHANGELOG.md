@@ -3,6 +3,12 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v1.1.1] - 2022-09-11
+
+### Added
+- Added `PoolableReturnAfterDelay`, a component which will automatically return a poolable object after some time.
+- Added `PoolableUnityEventEmitter`, a component which will fire UnityEvents for the matching poolable C# events.
+
 ## [v1.1.0] - 2022-09-03
 
 ### Added
