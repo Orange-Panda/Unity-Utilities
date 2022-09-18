@@ -76,7 +76,7 @@ namespace LMirman.Utilities
 			return -1;
 		}
 
-		protected void DisableAllItems()
+		public void DisableAllItems()
 		{
 			foreach (T item in items)
 			{
