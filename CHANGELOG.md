@@ -3,6 +3,17 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Added support for horizontal scrolling on the `Autoscroll` component.
+- Added fields to separately enable/disable Horizontal and Vertical management on the `Autoscroll` component. Both default to enabled.
+- Added `PoolableBehaviour` class: A template class that automatically subscribes to `Poolable`'s C# events and invokes virtual methods that your own inheriting classes can override.
+	- This can be used to make developing pooled objects slightly more convenient but is not required.
+
+### Changed
+- The `DisableAllItems()` function on UIGroup is now `public`. Was previously `protected`.
+
 ## [v1.1.1] - 2022-09-11
 
 ### Added

@@ -13,6 +13,11 @@ namespace LMirman.Utilities
 	[RequireComponent(typeof(ScrollRect))]
 	public class AutoScroll : MonoBehaviour
 	{
+		[SerializeField, Tooltip("Should the auto scroll component control the horizontal (left-right) scroll position?")]
+		private bool affectHorizontal = true;
+		[SerializeField, Tooltip("Should the auto scroll component control the vertical (up-down) scroll position?")]
+		private bool affectVertical = true;
+		
 		private List<Selectable> candidates;
 		private ScrollRect scrollRect;
 		private GameObject lastSelection;
@@ -20,6 +25,9 @@ namespace LMirman.Utilities
 
 		private readonly Vector3[] selectableWorld = new Vector3[4];
 		private readonly Vector3[] scrollWorld = new Vector3[4];
+		
+		public bool AffectHorizontal { get => affectHorizontal; set => affectHorizontal = value; }
+		public bool AffectVertical { get => affectVertical; set => affectVertical = value; }
 
 		private void Awake()
 		{
@@ -66,7 +74,7 @@ namespace LMirman.Utilities
 		/// <param name="selectable">The selectable to focus the <see cref="scrollRect"/> ensure is visible within its viewport.</param>
 		public void FocusSelectable(Selectable selectable)
 		{
-			if (selectable == null || !candidates.Contains(selectable))
+			if (selectable == null || !candidates.Contains(selectable) || (!affectHorizontal && !affectVertical))
 			{
 				return;
 			}
@@ -75,23 +83,32 @@ namespace LMirman.Utilities
 			// Array index reference: 0 - bottom left, 1 - top left, 2 - top right, 3 - bottom right
 			scrollRect.content.GetWorldCorners(scrollWorld);
 			selectable.GetComponent<RectTransform>().GetWorldCorners(selectableWorld);
+			SetVertical();
+			SetHorizontal();
+		}
 
+		private void SetVertical()
+		{
+			if (!affectVertical || !scrollRect.vertical)
+			{
+				return;
+			}
+			
+			// Determine the range in which the current content is visible
+			float scrollSize = Mathf.Clamp01(scrollRect.viewport.rect.height / scrollRect.content.rect.height);
+			float t = scrollRect.verticalNormalizedPosition;
+			Vector2 visibleRange = new Vector2(Mathf.Lerp(0, 1 - scrollSize, t), Mathf.Lerp(scrollSize, 1, t));
+			
+			// Padding that will add a little extra space forward the selectable when it is made visible.
+			float padding = scrollSize / 40f;
+			
 			// Calculate the height of the scroll content and the top/bottom offsets of the selectable within the scroll rect.
-			float scrollSize = scrollRect.verticalScrollbar.size;
 			float scrollHeight = Mathf.Abs(scrollWorld[1].y - scrollWorld[0].y);
 			float topDistance = Mathf.Abs(scrollWorld[1].y - selectableWorld[1].y);
 			float topNormalizedPosition = 1 - (topDistance / scrollHeight);
 			float botDistance = Mathf.Abs(scrollWorld[1].y - selectableWorld[0].y);
 			float botNormalizedPosition = 1 - (botDistance / scrollHeight);
-
-			// Determine the range in which the current content is visible
-			Vector2 start = new Vector2(0, scrollSize);
-			Vector2 end = new Vector2(1 - scrollSize, 1);
-			Vector2 visibleRange = Vector2.Lerp(start, end, scrollRect.verticalScrollbar.value);
-
-			// Padding that will add a little extra space forward the selectable when it is made visible.
-			float padding = scrollSize / 40f;
-
+			
 			// Check if top is within range
 			if (topNormalizedPosition > visibleRange.y)
 			{
@@ -102,6 +119,41 @@ namespace LMirman.Utilities
 			if (botNormalizedPosition < visibleRange.x)
 			{
 				scrollRect.verticalNormalizedPosition = Mathf.InverseLerp(0, 1 - scrollSize, botNormalizedPosition - padding);
+			}
+		}
+
+		private void SetHorizontal()
+		{
+			if (!affectHorizontal || !scrollRect.horizontal)
+			{
+				return;
+			}
+			
+			// Determine the range in which the current content is visible
+			float scrollSize = Mathf.Clamp01(scrollRect.viewport.rect.width / scrollRect.content.rect.width);
+			float t = scrollRect.horizontalNormalizedPosition;
+			Vector2 visibleRange = new Vector2(Mathf.Lerp(0, 1 - scrollSize, t), Mathf.Lerp(scrollSize, 1, t));
+
+			// Padding that will add a little extra space forward the selectable when it is made visible.
+			float padding = scrollSize / 40f;
+			
+			// Calculate the width of the scroll content and the left/right offsets of the selectable within the scroll rect.
+			float scrollWidth = Mathf.Abs(scrollWorld[2].x - scrollWorld[1].x);
+			float leftDistance = Mathf.Abs(scrollWorld[1].x - selectableWorld[1].x);
+			float leftNormalizedPosition = leftDistance / scrollWidth;
+			float rightDistance = Mathf.Abs(scrollWorld[1].x - selectableWorld[2].x);
+			float rightNormalizedPosition = rightDistance / scrollWidth;
+
+			// Check if right is within range
+			if (rightNormalizedPosition > visibleRange.y)
+			{
+				scrollRect.horizontalNormalizedPosition = Mathf.InverseLerp(scrollSize, 1, rightNormalizedPosition + padding);
+			}
+
+			// Check if left is within range
+			if (leftNormalizedPosition < visibleRange.x)
+			{
+				scrollRect.horizontalNormalizedPosition = Mathf.InverseLerp(0, 1 - scrollSize, leftNormalizedPosition - padding);
 			}
 		}
 
