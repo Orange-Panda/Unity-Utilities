@@ -1,0 +1,26 @@
+{
+    "name": "LMirman.Utilities.Editor.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7c32082be04a5ab48a0b3c7882090528",
+        "GUID:9b915a80f7c8d3f46a3bc0ae64765eb0",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
