@@ -3,6 +3,11 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v1.3.0] - 2022-10-26
+
+### Added
+- Added `ClampedValue<T>` and `ClampedField<T>` classes which ensure a value is within boundaries which are set at the objects contruction.
+
 ## [v1.2.0] - 2022-10-12
 
 ### Added
