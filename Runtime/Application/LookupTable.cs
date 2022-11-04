@@ -1,4 +1,5 @@
 using LMirman.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -20,6 +21,7 @@ namespace LMirman.Utilities
 		public LookupCollectionAsset<T> Asset { get; private set; }
 		public Dictionary<string, T> Lookup { get; } = new Dictionary<string, T>();
 		public List<T> List { get; } = new List<T>();
+		public T DefaultValue { get; private set; }
 
 		/// <summary>
 		/// Create an instance of a lookup table based on a particular lookup table asset.
@@ -58,6 +60,8 @@ namespace LMirman.Utilities
 					Lookup.Add(entry.Key, entry);
 					List.Add(entry);
 				}
+
+				DefaultValue = Asset.DefaultValue;
 			}
 			else
 			{
@@ -79,7 +83,7 @@ namespace LMirman.Utilities
 				message = "The item key should not be null or empty.";
 				return false;
 			}
-		
+
 			bool value = true;
 			if (key.Contains(' '))
 			{
@@ -110,6 +114,8 @@ public abstract class LookupCollectionAsset<T> : ScriptableObject where T : ILoo
 	public abstract IEnumerable<T> Entries { get; }
 
 	public abstract void InsertEntry(T entry);
+
+	public virtual T DefaultValue => default;
 }
 
 public interface ILookupCollectionEntry
@@ -126,4 +132,16 @@ public interface ILookupCollectionEntry
 	///  - The key should not include any accented or exotic ascii characters.<br/>
 	/// </remarks>
 	public string Key { get; }
+}
+
+[Serializable]
+public class GenericLookupEntry<T> : ILookupCollectionEntry
+{
+	[SerializeField]
+	private string key;
+	[SerializeField]
+	private T value;
+	
+	public string Key => key;
+	public T Value => value;
 }
