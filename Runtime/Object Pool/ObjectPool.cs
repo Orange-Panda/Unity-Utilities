@@ -51,21 +51,34 @@ namespace LMirman.Utilities
 			return poolable;
 		}
 
-		public static Poolable Instantiate(GameObject template, Vector3 position, Quaternion rotation)
+		public static Poolable Instantiate(GameObject template, Vector3 position, Quaternion rotation, Space space = Space.World)
 		{
 			Poolable poolable = GetObject(template);
-			poolable.transform.SetPositionAndRotation(position, rotation);
+			SetPositionAndRotation(poolable, position, rotation, space);
 			Pools[template].OnRetrieveObject(poolable);
 			return poolable;
 		}
 
-		public static Poolable Instantiate(GameObject template, Vector3 position, Quaternion rotation, Transform parent)
+		public static Poolable Instantiate(GameObject template, Vector3 position, Quaternion rotation, Transform parent, Space space = Space.World)
 		{
 			Poolable poolable = GetObject(template);
 			poolable.transform.SetParent(parent);
-			poolable.transform.SetPositionAndRotation(position, rotation);
+			SetPositionAndRotation(poolable, position, rotation, space);
 			Pools[template].OnRetrieveObject(poolable);
 			return poolable;
+		}
+
+		private static void SetPositionAndRotation(Poolable poolable, Vector3 position, Quaternion rotation, Space space)
+		{
+			if (space == Space.Self)
+			{
+				poolable.transform.localPosition = position;
+				poolable.transform.localRotation = rotation;
+			}
+			else
+			{
+				poolable.transform.SetPositionAndRotation(position, rotation);
+			}
 		}
 
 		internal static void NotifyObjectReturned(Poolable poolable)
