@@ -3,6 +3,13 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v1.4.0] - 2022-11-18
+
+### Added
+- Added an optional `DefaultValue` property to the LookupTable system.
+- Added ability to control the `Space` in which an ObjectPool instantiates
+- Added support for the `IConvertible` type in the Generic Data Bank
+
 ## [v1.3.0] - 2022-10-26
 
 ### Added
