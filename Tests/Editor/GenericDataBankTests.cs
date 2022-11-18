@@ -402,6 +402,34 @@ public class GenericDataBankTests
 	}
 
 	[Test]
+	public void TryGetGeneralValue_IConvertibleStringValue_ValueMatches()
+	{
+		var stubData = new GenericDataBank();
+		string key = "key";
+		string expected = "value";
+
+		stubData.SetClass(key, expected);
+		stubData.TryGetValue(key, out IConvertible output);
+		string actual = (string)Convert.ChangeType(output, typeof(string));
+
+		Assert.AreEqual(actual, expected);
+	}
+	
+	[Test]
+	public void TryGetGeneralValue_IConvertibleIntValue_ValueMatches()
+	{
+		var stubData = new GenericDataBank();
+		string key = "key";
+		int expected = 4;
+
+		stubData.SetStruct(key, expected);
+		stubData.TryGetValue(key, out IConvertible output);
+		int actual = (int)Convert.ChangeType(output, typeof(int));
+
+		Assert.AreEqual(actual, expected);
+	}
+	
+	[Test]
 	public void TryGetGeneralValue_StringValue_ValueMatches()
 	{
 		var stubData = new GenericDataBank();

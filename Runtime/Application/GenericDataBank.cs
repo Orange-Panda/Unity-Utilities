@@ -202,6 +202,14 @@ namespace LMirman.Utilities
 				}
 				else if (dataValue is string json)
 				{
+					// Do not try to parse the request type in the specific case of the request type being of IConvertible
+					if (typeof(T) == typeof(IConvertible))
+					{
+						IConvertible convertibleValue = JsonConvert.DeserializeObject<string>(json);
+						value = (T)convertibleValue;
+						return true;
+					}
+					
 					value = JsonConvert.DeserializeObject<T>(json);
 					return true;
 				}
