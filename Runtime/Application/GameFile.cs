@@ -49,14 +49,9 @@ namespace LMirman.Utilities
 		public float LastSyncEngineRealtime { get; set; }
 
 		/// <summary>
-		/// The <see cref="DateTime.Now"/> Ticks value at which the loaded data was last in sync with system file (usually the last load/write action).
-		/// </summary>
-		public long LastSyncSystemTime { get; set; }
-
-		/// <summary>
 		/// The <see cref="DateTime.UtcNow"/> Ticks value at which the loaded data was last in sync with system file (usually the last load/write action).
 		/// </summary>
-		public long LastSyncSystemTimeUtc { get; set; }
+		public long LastSyncSystemTime { get; set; }
 		#endregion
 
 		/// <summary>
@@ -310,8 +305,7 @@ namespace LMirman.Utilities
 		{
 			LastSyncEngineTime = Time.time;
 			LastSyncEngineRealtime = Time.realtimeSinceStartup;
-			LastSyncSystemTime = DateTime.Now.Ticks;
-			LastSyncSystemTimeUtc = DateTime.UtcNow.Ticks;
+			LastSyncSystemTime = DateTime.UtcNow.Ticks;
 		}
 
 		public enum FileType
