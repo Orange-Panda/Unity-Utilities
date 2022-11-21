@@ -37,6 +37,28 @@ namespace LMirman.Utilities
 		/// </remarks>
 		public T Data { get; set; }
 
+		#region Last Sync Times
+		/// <summary>
+		/// The <see cref="Time.time"/> at which the loaded data was last in sync with system file (usually the last load/write action).
+		/// </summary>
+		public float LastSyncEngineTime { get; set; }
+
+		/// <summary>
+		/// The <see cref="Time.realtimeSinceStartup"/> at which the loaded data was last in sync with system file (usually the last load/write action).
+		/// </summary>
+		public float LastSyncEngineRealtime { get; set; }
+
+		/// <summary>
+		/// The <see cref="DateTime.Now"/> Ticks value at which the loaded data was last in sync with system file (usually the last load/write action).
+		/// </summary>
+		public long LastSyncSystemTime { get; set; }
+
+		/// <summary>
+		/// The <see cref="DateTime.UtcNow"/> Ticks value at which the loaded data was last in sync with system file (usually the last load/write action).
+		/// </summary>
+		public long LastSyncSystemTimeUtc { get; set; }
+		#endregion
+
 		/// <summary>
 		/// Create an instance of the game file that can be accessed by other classes.
 		/// </summary>
@@ -88,6 +110,7 @@ namespace LMirman.Utilities
 			string json = JsonConvert.SerializeObject(Data, Formatting.None);
 			File.WriteAllBytes(dataPath, encryptor.Encrypt(json));
 			OnFileWritten.Invoke(this);
+			UpdateFileSyncTime();
 		}
 
 		private void WriteFileAsJson()
@@ -95,6 +118,7 @@ namespace LMirman.Utilities
 			string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented);
 			File.WriteAllText(jsonPath, jsonData);
 			OnFileWritten.Invoke(this);
+			UpdateFileSyncTime();
 		}
 		#endregion
 
@@ -126,6 +150,7 @@ namespace LMirman.Utilities
 				Data = data;
 				ValidData = true;
 				OnFileRead.Invoke(this);
+				UpdateFileSyncTime();
 				return true;
 			}
 			else
@@ -141,6 +166,7 @@ namespace LMirman.Utilities
 				Data = data;
 				ValidData = true;
 				OnFileRead.Invoke(this);
+				UpdateFileSyncTime();
 				return true;
 			}
 			else
@@ -275,6 +301,18 @@ namespace LMirman.Utilities
 			return true;
 		}
 		#endregion
+
+		/// <summary>
+		/// Updates the sync state variables to the current time.
+		/// Manually invoke this if the loaded data is in sync with the system file.
+		/// </summary>
+		public void UpdateFileSyncTime()
+		{
+			LastSyncEngineTime = Time.time;
+			LastSyncEngineRealtime = Time.realtimeSinceStartup;
+			LastSyncSystemTime = DateTime.Now.Ticks;
+			LastSyncSystemTimeUtc = DateTime.UtcNow.Ticks;
+		}
 
 		public enum FileType
 		{
