@@ -152,7 +152,7 @@ public class ClampedField<T> : ClampedValue<T> where T : IComparable
 	/// </summary>
 	/// <remarks>
 	/// There is <b>never</b> any check the <paramref name="min"/> is not greater than <paramref name="max"/> so it is your responsibility to validate the bounds.<br/>
-	/// If the <paramref name="min"/> does happen to be greater than <paramref name="max"/>: <see cref="Value"/> will always be equal to <paramref name="min"/>.
+	/// If the <paramref name="min"/> does happen to be greater than <paramref name="max"/>: <see cref="ClampedValue&lt;T&gt;.Value"/> will always be equal to <paramref name="min"/>.
 	/// </remarks>
 	/// <param name="initialValue">The starting value</param>
 	/// <param name="min">The lower bound for the value</param>

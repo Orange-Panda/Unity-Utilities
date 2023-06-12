@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,6 +27,7 @@ namespace LMirman.Utilities
 	///		yield return Yielders.WaitForSecondsRealtime(0.25f);
 	/// </code>
 	/// </example>
+	[PublicAPI]
 	public static class Yielders
 	{
 		private static readonly Dictionary<float, WaitForSeconds> WaitForSecondsMap = new Dictionary<float, WaitForSeconds>();
@@ -43,13 +45,13 @@ namespace LMirman.Utilities
 		/// <returns>A cached reference to a WaitForSeconds yield instruction of the given value.</returns>
 		public static WaitForSeconds WaitForSeconds(float value)
 		{
-			if (WaitForSecondsMap.ContainsKey(value))
+			if (WaitForSecondsMap.TryGetValue(value, out WaitForSeconds entry))
 			{
-				return WaitForSecondsMap[value];
+				return entry;
 			}
 			else
 			{
-				WaitForSeconds entry = new WaitForSeconds(value);
+				entry = new WaitForSeconds(value);
 				WaitForSecondsMap.Add(value, entry);
 				return entry;
 			}
@@ -65,13 +67,13 @@ namespace LMirman.Utilities
 		/// <returns>A cached reference to a WaitForSecondsRealtime yield instruction of the given value.</returns>
 		public static WaitForSecondsRealtime WaitForSecondsRealtime(float value)
 		{
-			if (WaitForSecondsRealtimeMap.ContainsKey(value))
+			if (WaitForSecondsRealtimeMap.TryGetValue(value, out WaitForSecondsRealtime entry))
 			{
-				return WaitForSecondsRealtimeMap[value];
+				return entry;
 			}
 			else
 			{
-				WaitForSecondsRealtime entry = new WaitForSecondsRealtime(value);
+				entry = new WaitForSecondsRealtime(value);
 				WaitForSecondsRealtimeMap.Add(value, entry);
 				return entry;
 			}

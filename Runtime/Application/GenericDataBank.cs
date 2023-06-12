@@ -60,15 +60,7 @@ namespace LMirman.Utilities
 		private void SetObject(string key, object value)
 		{
 			key = ValidateKey(key);
-
-			if (data.ContainsKey(key))
-			{
-				data[key] = value;
-			}
-			else
-			{
-				data.Add(key, value);
-			}
+			data[key] = value;
 		}
 
 		/// <summary>
