@@ -1,7 +1,8 @@
-using UnityEngine;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using UnityEngine;
 
 namespace LMirman.Utilities
 {
@@ -9,16 +10,33 @@ namespace LMirman.Utilities
 	/// Generic class that can quickly read/write files to the player's <see cref="Application.persistentDataPath"/>.
 	/// </summary>
 	/// <typeparam name="T">The serializable data that the file represents.</typeparam>
+	[PublicAPI]
 	public class GameFile<T>
 	{
 		public event Action<GameFile<T>> OnFileWritten = delegate { };
 		public event Action<GameFile<T>> OnFileRead = delegate { };
 		public event Action<GameFile<T>> OnFileDeleted = delegate { };
 
-		private readonly string dataPath;
-		private readonly string jsonPath;
-		private readonly Encryption.Encryptor encryptor;
-		private readonly FileType fileType;
+		/// <summary>
+		/// The directory of this file relative to <see cref="Application.persistentDataPath"/>
+		/// </summary>
+		public readonly string fileName;
+		/// <summary>
+		/// Absolute path that the game file will save to as an encrypted file.
+		/// </summary>
+		public readonly string dataPath;
+		/// <summary>
+		/// Absolute path that the game file will save to as a json file.
+		/// </summary>
+		public readonly string jsonPath;
+		/// <summary>
+		/// The encryptor being used to encrypt json file to data file.
+		/// </summary>
+		public readonly Encryption.Encryptor encryptor;
+		/// <summary>
+		/// The preferred file type to save this as to disk.
+		/// </summary>
+		public readonly FileType fileType;
 
 		/// <summary>
 		/// Determines if <see cref="Data"/> has been written to or loaded.
@@ -28,7 +46,7 @@ namespace LMirman.Utilities
 		/// This value can be set publicly so it is your responsibility to let the GameFile know your data is has been initialized.
 		/// </remarks>
 		public bool ValidData { get; set; }
-	
+
 		/// <summary>
 		/// The data which is to be read/written to the file. 
 		/// </summary>
@@ -36,6 +54,11 @@ namespace LMirman.Utilities
 		/// Ensure that <see cref="T"/> is serializable or else the data may not save as expected.
 		/// </remarks>
 		public T Data { get; set; }
+
+		/// <summary>
+		/// The path this file will save to depending on the value of <see cref="fileType"/>.
+		/// </summary>
+		public string Path => fileType == FileType.Encrypted ? dataPath : jsonPath;
 
 		#region Last Sync Times
 		/// <summary>
@@ -62,6 +85,7 @@ namespace LMirman.Utilities
 		/// <param name="fileType">The type of file this is saved as to the disk.</param>
 		public GameFile(string fileName, Encryption.Encryptor encryptor, FileType fileType = FileType.Encrypted)
 		{
+			this.fileName = fileName;
 			dataPath = $"{Application.persistentDataPath}/{fileName}.dat";
 			jsonPath = $"{Application.persistentDataPath}/{fileName}.json";
 			this.encryptor = encryptor;
@@ -97,6 +121,7 @@ namespace LMirman.Utilities
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+
 			return true;
 		}
 
@@ -170,7 +195,7 @@ namespace LMirman.Utilities
 			}
 		}
 		#endregion
-	
+
 		#region Peek File Functionality
 		public bool PeekFile(out T data)
 		{
@@ -288,7 +313,7 @@ namespace LMirman.Utilities
 			{
 				return false;
 			}
-		
+
 			string fileText = encryptor.Decrypt(File.ReadAllBytes(dataPath));
 			T objectData = JsonConvert.DeserializeObject<T>(fileText);
 			string jsonData = JsonConvert.SerializeObject(objectData, Formatting.Indented);
