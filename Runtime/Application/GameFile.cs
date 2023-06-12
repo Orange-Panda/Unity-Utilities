@@ -19,7 +19,19 @@ namespace LMirman.Utilities
 		public event Action<GameFile<T>> OnFileDeleted = delegate { };
 
 		/// <summary>
-		/// The directory of this file relative to <see cref="Application.persistentDataPath"/>
+		/// The directory of this file relative to <see cref="Application.persistentDataPath"/>.
+		/// </summary>
+		/// <remarks>
+		/// Does not include the file name.<br/>
+		/// Ends with a `\`.
+		/// </remarks>
+		public readonly string localFileDirectory;
+		/// <summary>
+		/// The absolute file directory for this game file.
+		/// </summary>
+		public readonly string fileDirectory;
+		/// <summary>
+		/// The name of the game file.
 		/// </summary>
 		public readonly string fileName;
 		/// <summary>
@@ -81,14 +93,18 @@ namespace LMirman.Utilities
 		/// <summary>
 		/// Create an instance of the game file that can be accessed by other classes.
 		/// </summary>
-		/// <param name="fileName">The name of the file on the disc. Do not include any extensions in this name.</param>
+		/// <param name="localPathToFile">The local directory of the file on the disc. The final part of the path is the name of the file. Do not include any extensions in this name. Examples: `save1`, `saves/save1`, `files/data/preferences`</param>
 		/// <param name="encryptor">The method of encryption for the file. Consider using <see cref="Encryption.DefaultEncryptor"/> if your file does not need to be secure.</param>
 		/// <param name="fileType">The type of file this is saved as to the disk.</param>
-		public GameFile(string fileName, Encryption.Encryptor encryptor, FileType fileType = FileType.Encrypted)
+		public GameFile(string localPathToFile, Encryption.Encryptor encryptor, FileType fileType = FileType.Encrypted)
 		{
-			this.fileName = fileName;
-			dataPath = $"{Application.persistentDataPath}/{fileName}.dat";
-			jsonPath = $"{Application.persistentDataPath}/{fileName}.json";
+			localPathToFile = localPathToFile.Replace('\\', '/').TrimStart('/').TrimEnd('/');
+			int positionOfLastSlash = localPathToFile.LastIndexOf('/');
+			localFileDirectory = "/" + (positionOfLastSlash < 0 ? string.Empty : localPathToFile.Substring(0, positionOfLastSlash + 1));
+			fileName = localPathToFile.Substring(positionOfLastSlash + 1);
+			fileDirectory = $"{Application.persistentDataPath}{localPathToFile}";
+			dataPath = $"{fileDirectory}{fileName}.dat";
+			jsonPath = $"{fileDirectory}{fileName}.json";
 			this.encryptor = encryptor;
 			this.fileType = fileType;
 		}
@@ -155,6 +171,7 @@ namespace LMirman.Utilities
 
 		private void WriteFileAsBytes()
 		{
+			Directory.CreateDirectory(fileDirectory);
 			File.WriteAllBytes(dataPath, GetDataAsEncryptedByteArray());
 			OnFileWritten.Invoke(this);
 			UpdateFileSyncTime();
@@ -162,6 +179,7 @@ namespace LMirman.Utilities
 
 		private void WriteFileAsJson()
 		{
+			Directory.CreateDirectory(fileDirectory);
 			File.WriteAllBytes(jsonPath, GetDataAsJsonByteArray());
 			OnFileWritten.Invoke(this);
 			UpdateFileSyncTime();
