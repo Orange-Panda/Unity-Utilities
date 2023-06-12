@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 namespace LMirman.Utilities
@@ -92,6 +93,33 @@ namespace LMirman.Utilities
 			this.fileType = fileType;
 		}
 
+		#region Data as Byte Array Functions
+		public byte[] GetDataAsByteArray()
+		{
+			switch (fileType)
+			{
+				case FileType.RawJson:
+					return GetDataAsEncryptedByteArray();
+				case FileType.Encrypted:
+					return GetDataAsJsonByteArray();
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		public byte[] GetDataAsEncryptedByteArray()
+		{
+			string json = JsonConvert.SerializeObject(Data, Formatting.None);
+			return encryptor.Encrypt(json);
+		}
+
+		public byte[] GetDataAsJsonByteArray()
+		{
+			string json = JsonConvert.SerializeObject(Data, Formatting.None);
+			return Encoding.UTF8.GetBytes(json);
+		}
+		#endregion
+
 		#region Write File Functionality
 		/// <summary>
 		/// Write the current <see cref="Data"/> to the system storage. 
@@ -127,16 +155,14 @@ namespace LMirman.Utilities
 
 		private void WriteFileAsBytes()
 		{
-			string json = JsonConvert.SerializeObject(Data, Formatting.None);
-			File.WriteAllBytes(dataPath, encryptor.Encrypt(json));
+			File.WriteAllBytes(dataPath, GetDataAsEncryptedByteArray());
 			OnFileWritten.Invoke(this);
 			UpdateFileSyncTime();
 		}
 
 		private void WriteFileAsJson()
 		{
-			string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented);
-			File.WriteAllText(jsonPath, jsonData);
+			File.WriteAllBytes(jsonPath, GetDataAsJsonByteArray());
 			OnFileWritten.Invoke(this);
 			UpdateFileSyncTime();
 		}
