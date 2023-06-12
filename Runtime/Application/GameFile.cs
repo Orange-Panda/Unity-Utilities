@@ -102,7 +102,7 @@ namespace LMirman.Utilities
 			int positionOfLastSlash = localPathToFile.LastIndexOf('/');
 			localFileDirectory = "/" + (positionOfLastSlash < 0 ? string.Empty : localPathToFile.Substring(0, positionOfLastSlash + 1));
 			fileName = localPathToFile.Substring(positionOfLastSlash + 1);
-			fileDirectory = $"{Application.persistentDataPath}{localPathToFile}";
+			fileDirectory = $"{Application.persistentDataPath}{localFileDirectory}";
 			dataPath = $"{fileDirectory}{fileName}.dat";
 			jsonPath = $"{fileDirectory}{fileName}.json";
 			this.encryptor = encryptor;
