@@ -39,9 +39,17 @@ namespace LMirman.Utilities
 		/// </summary>
 		public readonly string dataPath;
 		/// <summary>
+		/// Local path within <see cref="Application.persistentDataPath"/> that the game file will save to as an encrypted file.
+		/// </summary>
+		public readonly string localDataPath;
+		/// <summary>
 		/// Absolute path that the game file will save to as a json file.
 		/// </summary>
 		public readonly string jsonPath;
+		/// <summary>
+		/// Local path within <see cref="Application.persistentDataPath"/> that the game file will save to as a json file.
+		/// </summary>
+		public readonly string localJsonPath;
 		/// <summary>
 		/// The encryptor being used to encrypt json file to data file.
 		/// </summary>
@@ -72,6 +80,7 @@ namespace LMirman.Utilities
 		/// The path this file will save to depending on the value of <see cref="fileType"/>.
 		/// </summary>
 		public string Path => fileType == FileType.Encrypted ? dataPath : jsonPath;
+		public string LocalPath => fileType == FileType.Encrypted ? localDataPath : localJsonPath;
 
 		#region Last Sync Times
 		/// <summary>
@@ -103,6 +112,8 @@ namespace LMirman.Utilities
 			localFileDirectory = "/" + (positionOfLastSlash < 0 ? string.Empty : localPathToFile.Substring(0, positionOfLastSlash + 1));
 			fileName = localPathToFile.Substring(positionOfLastSlash + 1);
 			fileDirectory = $"{Application.persistentDataPath}{localFileDirectory}";
+			localDataPath = $"{localFileDirectory.TrimStart('/')}{fileName}.dat";
+			localJsonPath = $"{localFileDirectory.TrimStart('/')}{fileName}.json";
 			dataPath = $"{fileDirectory}{fileName}.dat";
 			jsonPath = $"{fileDirectory}{fileName}.json";
 			this.encryptor = encryptor;
