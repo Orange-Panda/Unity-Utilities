@@ -125,9 +125,9 @@ namespace LMirman.Utilities
 		{
 			switch (fileType)
 			{
-				case FileType.RawJson:
-					return GetDataAsEncryptedByteArray();
 				case FileType.Encrypted:
+					return GetDataAsEncryptedByteArray();
+				case FileType.RawJson:
 					return GetDataAsJsonByteArray();
 				default:
 					throw new ArgumentOutOfRangeException();
@@ -138,9 +138,9 @@ namespace LMirman.Utilities
 		{
 			switch (fileType)
 			{
-				case FileType.RawJson:
-					return GetDataAsEncryptedByteArray(data);
 				case FileType.Encrypted:
+					return GetDataAsEncryptedByteArray(data);
+				case FileType.RawJson:
 					return GetDataAsJsonByteArray(data);
 				default:
 					throw new ArgumentOutOfRangeException();
@@ -173,10 +173,10 @@ namespace LMirman.Utilities
 		{
 			switch (fileType)
 			{
-				case FileType.RawJson:
-					return GetDataFromJsonByteArray(bytes);
 				case FileType.Encrypted:
 					return GetDataFromEncryptedByteArray(bytes);
+				case FileType.RawJson:
+					return GetDataFromJsonByteArray(bytes);
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
