@@ -120,7 +120,7 @@ namespace LMirman.Utilities
 			this.fileType = fileType;
 		}
 
-		#region Data as Byte Array Functions
+		#region Get Functions
 		public byte[] GetDataAsByteArray()
 		{
 			switch (fileType)
@@ -134,16 +134,64 @@ namespace LMirman.Utilities
 			}
 		}
 
+		public byte[] GetDataAsByteArray(T data)
+		{
+			switch (fileType)
+			{
+				case FileType.RawJson:
+					return GetDataAsEncryptedByteArray(data);
+				case FileType.Encrypted:
+					return GetDataAsJsonByteArray(data);
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
 		public byte[] GetDataAsEncryptedByteArray()
 		{
-			string json = JsonConvert.SerializeObject(Data, Formatting.None);
+			return GetDataAsEncryptedByteArray(Data);
+		}
+
+		public byte[] GetDataAsEncryptedByteArray(T data)
+		{
+			string json = JsonConvert.SerializeObject(data, Formatting.None);
 			return encryptor.Encrypt(json);
 		}
 
 		public byte[] GetDataAsJsonByteArray()
 		{
-			string json = JsonConvert.SerializeObject(Data, Formatting.None);
+			return GetDataAsJsonByteArray(Data);
+		}
+
+		public byte[] GetDataAsJsonByteArray(T data)
+		{
+			string json = JsonConvert.SerializeObject(data, Formatting.None);
 			return Encoding.UTF8.GetBytes(json);
+		}
+
+		public T GetDataFromByteArray(byte[] bytes)
+		{
+			switch (fileType)
+			{
+				case FileType.RawJson:
+					return GetDataFromJsonByteArray(bytes);
+				case FileType.Encrypted:
+					return GetDataFromEncryptedByteArray(bytes);
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		public T GetDataFromEncryptedByteArray(byte[] bytes)
+		{
+			string jsonData = encryptor.Decrypt(bytes);
+			return JsonConvert.DeserializeObject<T>(jsonData);
+		}
+
+		public T GetDataFromJsonByteArray(byte[] bytes)
+		{
+			string jsonData = Encoding.UTF8.GetString(bytes);
+			return JsonConvert.DeserializeObject<T>(jsonData);
 		}
 		#endregion
 
@@ -251,6 +299,39 @@ namespace LMirman.Utilities
 		}
 		#endregion
 
+		#region Load Data Functionality
+		public void LoadData(byte[] bytes)
+		{
+			switch (fileType)
+			{
+				case FileType.Encrypted:
+					LoadDataFromBytes(bytes);
+					break;
+				case FileType.RawJson:
+					LoadDataFromJson(bytes);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		private void LoadDataFromBytes(byte[] bytes)
+		{
+			Data = GetDataFromEncryptedByteArray(bytes);
+			ValidData = true;
+			OnFileRead.Invoke(this);
+			UpdateFileSyncTime();
+		}
+
+		private void LoadDataFromJson(byte[] bytes)
+		{
+			Data = GetDataFromJsonByteArray(bytes);
+			ValidData = true;
+			OnFileRead.Invoke(this);
+			UpdateFileSyncTime();
+		}
+		#endregion
+
 		#region Peek File Functionality
 		public bool PeekFile(out T data)
 		{
@@ -274,8 +355,7 @@ namespace LMirman.Utilities
 			}
 
 			byte[] byteData = File.ReadAllBytes(dataPath);
-			string jsonData = encryptor.Decrypt(byteData);
-			data = JsonConvert.DeserializeObject<T>(jsonData);
+			data = GetDataFromEncryptedByteArray(byteData);
 			return true;
 		}
 
@@ -287,8 +367,8 @@ namespace LMirman.Utilities
 				return false;
 			}
 
-			string fileText = File.ReadAllText(jsonPath);
-			data = JsonConvert.DeserializeObject<T>(fileText);
+			byte[] byteData = File.ReadAllBytes(jsonPath);
+			data = GetDataFromJsonByteArray(byteData);
 			return true;
 		}
 		#endregion
