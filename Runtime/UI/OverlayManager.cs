@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace LMirman.Utilities
 	/// Handles an overlay system which is designed to display user input ui during the application.
 	/// Useful for interfaces such as inventory, pause menu, game overs, etc.
 	/// </summary>
+	[PublicAPI]
 	public class OverlayManager : MonoBehaviour
 	{
 		[SerializeField]

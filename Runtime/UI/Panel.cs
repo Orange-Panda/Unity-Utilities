@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,6 +7,7 @@ namespace LMirman.Utilities
 	/// <summary>
 	/// A ui element within a <see cref="PanelGroup"/>.
 	/// </summary>
+	[PublicAPI]
 	public class Panel : UIGroupItem
 	{
 		[Header("Panel Options")]

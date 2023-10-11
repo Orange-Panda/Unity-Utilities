@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using JetBrains.Annotations;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -8,7 +9,7 @@ namespace LMirman.Utilities
 	/// Abstract base class for an overlay within the <see cref="OverlayManager"/> system.
 	/// Inherit from this to create custom behavior for the overlays your application uses.
 	/// </summary>
-	[RequireComponent(typeof(GraphicRaycaster), typeof(Canvas))]
+	[RequireComponent(typeof(GraphicRaycaster), typeof(Canvas)), PublicAPI]
 	public abstract class OverlayInterface : MonoBehaviour
 	{
 		[Header("Overlay Interface")]

@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 - Added `int.LayerMaskContains` extension method
 - Added `Vector2.Rotate` extension method
+- Added `[PublicAPI]` attribute to most classes
 
 ## [v1.7.1] - 2023-06-12
 

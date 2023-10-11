@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,7 +11,7 @@ namespace LMirman.Utilities
 	/// This script, when attached to a <see cref="ScrollRect"/>, will update the <see cref="scrollRect"/>'s <see cref="ScrollRect.verticalNormalizedPosition"/> to include the rect of
 	/// a <see cref="Selectable"/> that is nested within <see cref="ScrollRect.content"/> when a new <see cref="Selectable"/> is selected.
 	/// </summary>
-	[RequireComponent(typeof(ScrollRect))]
+	[RequireComponent(typeof(ScrollRect)), PublicAPI]
 	public class AutoScroll : MonoBehaviour
 	{
 		[SerializeField, Tooltip("Should the auto scroll component control the horizontal (left-right) scroll position?")]

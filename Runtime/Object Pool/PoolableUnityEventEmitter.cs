@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -6,7 +7,7 @@ namespace LMirman.Utilities
 	/// <summary>
 	/// Built in component for the <see cref="Poolable"/> object that will automatically fire a UnityEvent when the matching C# event is invoked on <see cref="Poolable"/>.
 	/// </summary>
-	[RequireComponent(typeof(Poolable))]
+	[RequireComponent(typeof(Poolable)), PublicAPI]
 	public class PoolableUnityEventEmitter : MonoBehaviour
 	{
 		[SerializeField] 

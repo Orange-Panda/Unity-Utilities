@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace LMirman.Utilities
 {
+	[PublicAPI]
 	public static class ObjectPool
 	{
 		/// <summary>

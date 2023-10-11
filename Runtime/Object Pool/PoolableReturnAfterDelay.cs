@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace LMirman.Utilities
@@ -8,7 +9,7 @@ namespace LMirman.Utilities
 	/// <remarks>
 	/// Useful for visual effects that you don't want to explicitly manage the return of.
 	/// </remarks>
-	[RequireComponent(typeof(Poolable))]
+	[RequireComponent(typeof(Poolable)), PublicAPI]
 	public class PoolableReturnAfterDelay : MonoBehaviour
 	{
 		[SerializeField]

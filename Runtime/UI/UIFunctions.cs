@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace LMirman.Utilities
@@ -5,6 +6,7 @@ namespace LMirman.Utilities
 	/// <summary>
 	/// Handle functionality to assist other ui elements in synchronizing their behavior.
 	/// </summary>
+	[PublicAPI]
 	public static class UIFunctions
 	{
 		/// <summary>

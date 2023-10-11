@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace LMirman.Utilities
 	/// An options menu can create UI actions such as a 'Save Settings' and 'Revert Settings' action.
 	/// These can then be invoked by a UI button or input key.
 	/// </example>
+	[PublicAPI]
 	public class ActionEmitter : MonoBehaviour
 	{
 		/// <summary>
@@ -93,7 +95,7 @@ namespace LMirman.Utilities
 		/// <summary>
 		/// An action that can be invoked by an <see cref="ActionEmitter"/>
 		/// </summary>
-		[Serializable]
+		[Serializable, PublicAPI]
 		public class ActionEvent
 		{
 			public string name;

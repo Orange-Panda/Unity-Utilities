@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace LMirman.Utilities
@@ -9,6 +10,7 @@ namespace LMirman.Utilities
 	/// <remarks>
 	/// Tab groups are useful in cases such as categories under a single ui like an options menu or an inventory with various unique categories.
 	/// </remarks>
+	[PublicAPI]
 	public class TabGroup : UIGroup<Tab>
 	{
 		[SerializeField]

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace LMirman.Utilities
@@ -5,12 +6,12 @@ namespace LMirman.Utilities
 	/// <summary>
 	/// An optional <see cref="MonoBehaviour"/> class that automatically subscribes to C# events of the <see cref="Poolable"/> to make implementation easier.
 	/// </summary>
-	[RequireComponent(typeof(Poolable))]
+	[RequireComponent(typeof(Poolable)), PublicAPI]
 	public class PoolableBehaviour : MonoBehaviour
 	{
 		protected Poolable poolable;
 
-		protected void Awake()
+		protected virtual void Awake()
 		{
 			poolable = GetComponent<Poolable>();
 			poolable.ObjectPopulated += OnPopulated;

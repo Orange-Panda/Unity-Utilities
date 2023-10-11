@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using TMPro;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace LMirman.Utilities
 	/// <summary>
 	/// A UI window that is displayed in front of all other components, for the user to make a decision or accept a prompt.
 	/// </summary>
+	[PublicAPI]
 	public class ConfirmationWindow : MonoBehaviour
 	{
 		[SerializeField]

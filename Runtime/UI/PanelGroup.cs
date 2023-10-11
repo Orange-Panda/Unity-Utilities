@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+
 namespace LMirman.Utilities
 {
 	/// <summary>
@@ -14,6 +16,7 @@ namespace LMirman.Utilities
 	/// However, this situation should ideally be avoided by using different panels for each parent node (A and B having their own separate Panel C).
 	/// If that is not sufficient you may want to consider overriding <see cref="UIGroup{T}"/> and <see cref="UIGroupItem"/> and engineering a more advanced navigation system.
 	/// </remarks>
+	[PublicAPI]
 	public class PanelGroup : UIGroup<Panel>
 	{
 		/// <summary>
