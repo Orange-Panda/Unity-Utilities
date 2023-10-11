@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -80,6 +81,40 @@ namespace LMirman.Utilities
 		{
 			current.a = target.a;
 			return current;
+		}
+
+		/// <summary>
+		/// Check if a layer mask contains a particular layer.
+		/// </summary>
+		/// <param name="mask">The layer mask to check for a particular layer value</param>
+		/// <param name="layer">The layer to check for within <see cref="mask"/>. See: <see cref="GameObject.layer"/></param>
+		/// <returns>True if the <see cref="mask"/> has <see cref="layer"/>, false if it does not.</returns>
+		public static bool LayerMaskContains(this int mask, int layer)
+		{
+			return mask == (mask | (1 << layer));
+		}
+
+		/// <summary>
+		/// Rotate a Vector2 about the Z axis.
+		/// </summary>
+		/// <remarks>
+		/// Does <i>not</i> mutate the value of the Vector2 operated upon.
+		/// </remarks>
+		/// <param name="vector">The source vector to transform.</param>
+		/// <param name="degrees">
+		/// The degrees to rotate the vector about the Z axis.
+		/// Uses the same rotation rules as Unity's left handed coordinate system: positive values rotate counter clockwise, negative values rotate clockwise.
+		/// </param>
+		/// <returns>The resulting Vector2 from the rotation transformation.</returns>
+		[Pure]
+		public static Vector2 Rotate(this Vector2 vector, float degrees)
+		{
+			float delta = degrees * Mathf.Deg2Rad;
+			float cos = Mathf.Cos(delta);
+			float sin = Mathf.Sin(delta);
+			float newX = (vector.x * cos) - (vector.y * sin);
+			float newY = (vector.x * sin) + (vector.y * cos);
+			return new Vector2(newX, newY);
 		}
 	}
 }
