@@ -9,6 +9,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Added `int.LayerMaskContains` extension method
 - Added `Vector2.Rotate` extension method
 - Added `[PublicAPI]` attribute to most classes
+- Added methods to `UIGroup<T>` to mutate list of items
+- Added `ItemIndexChanged` event to `UIGroup<T>`
+- Added public get-only properties to `UIGroup<T>` for inspecting current values
+
+### Changed
+- UIGroup now sets current item to `null` and current index to `-1` when disabling all items. Previously kept old value.
 
 ## [v1.7.1] - 2023-06-12
 
