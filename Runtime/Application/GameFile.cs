@@ -58,6 +58,8 @@ namespace LMirman.Utilities
 		/// The preferred file type to save this as to disk.
 		/// </summary>
 		public readonly FileType fileType;
+		public JsonSerializerSettings jsonSerializeSettings;
+		public JsonSerializerSettings jsonDeserializeSettings;
 
 		/// <summary>
 		/// Determines if <see cref="Data"/> has been written to or loaded.
@@ -118,6 +120,8 @@ namespace LMirman.Utilities
 			jsonPath = $"{fileDirectory}{fileName}.json";
 			this.encryptor = encryptor;
 			this.fileType = fileType;
+			jsonSerializeSettings = new JsonSerializerSettings { Error = HandleError };
+			jsonDeserializeSettings = new JsonSerializerSettings { Error = HandleError };
 		}
 
 		#region Get Functions
@@ -154,7 +158,7 @@ namespace LMirman.Utilities
 
 		public byte[] GetDataAsEncryptedByteArray(T data)
 		{
-			string json = JsonConvert.SerializeObject(data, Formatting.None);
+			string json = JsonConvert.SerializeObject(data, Formatting.None, jsonSerializeSettings);
 			return encryptor.Encrypt(json);
 		}
 
@@ -165,7 +169,7 @@ namespace LMirman.Utilities
 
 		public byte[] GetDataAsJsonByteArray(T data)
 		{
-			string json = JsonConvert.SerializeObject(data, Formatting.None);
+			string json = JsonConvert.SerializeObject(data, Formatting.None, jsonSerializeSettings);
 			return Encoding.UTF8.GetBytes(json);
 		}
 
@@ -185,13 +189,13 @@ namespace LMirman.Utilities
 		public T GetDataFromEncryptedByteArray(byte[] bytes)
 		{
 			string jsonData = encryptor.Decrypt(bytes);
-			return JsonConvert.DeserializeObject<T>(jsonData);
+			return JsonConvert.DeserializeObject<T>(jsonData, jsonDeserializeSettings);
 		}
 
 		public T GetDataFromJsonByteArray(byte[] bytes)
 		{
 			string jsonData = Encoding.UTF8.GetString(bytes);
-			return JsonConvert.DeserializeObject<T>(jsonData);
+			return JsonConvert.DeserializeObject<T>(jsonData, jsonDeserializeSettings);
 		}
 		#endregion
 
@@ -432,8 +436,8 @@ namespace LMirman.Utilities
 			}
 
 			string fileText = File.ReadAllText(jsonPath);
-			T objectData = JsonConvert.DeserializeObject<T>(fileText);
-			string jsonData = JsonConvert.SerializeObject(objectData, Formatting.None);
+			T objectData = JsonConvert.DeserializeObject<T>(fileText, jsonDeserializeSettings);
+			string jsonData = JsonConvert.SerializeObject(objectData, Formatting.None, jsonSerializeSettings);
 			File.WriteAllBytes(dataPath, encryptor.Encrypt(jsonData));
 			return true;
 		}
@@ -450,13 +454,21 @@ namespace LMirman.Utilities
 			}
 
 			string fileText = encryptor.Decrypt(File.ReadAllBytes(dataPath));
-			T objectData = JsonConvert.DeserializeObject<T>(fileText);
-			string jsonData = JsonConvert.SerializeObject(objectData, Formatting.Indented);
+			T objectData = JsonConvert.DeserializeObject<T>(fileText, jsonDeserializeSettings);
+			string jsonData = JsonConvert.SerializeObject(objectData, Formatting.Indented, jsonSerializeSettings);
 			File.WriteAllText(jsonPath, jsonData);
 			return true;
 		}
 		#endregion
 
+		#region Error Handling
+		private void HandleError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
+		{
+			Debug.LogWarning($"An issue was encountered when deserializing game file \"{fileName}\"! This is likely due to invalid data being provided.\n{errorArgs.ErrorContext.Error.Message}");
+			errorArgs.ErrorContext.Handled = true;
+		}
+		#endregion
+		
 		/// <summary>
 		/// Updates the sync state variables to the current time.
 		/// Manually invoke this if the loaded data is in sync with the system file.
