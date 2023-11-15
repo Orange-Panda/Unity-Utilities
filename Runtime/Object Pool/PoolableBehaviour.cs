@@ -11,6 +11,8 @@ namespace LMirman.Utilities
 	{
 		protected Poolable poolable;
 
+		public Poolable Poolable => poolable;
+
 		protected virtual void Awake()
 		{
 			poolable = GetComponent<Poolable>();
