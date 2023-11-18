@@ -3,6 +3,11 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v2.0.1] - UNRELEASED
+
+### Fixed
+- Fixed unintentional exception being thrown in Poolable `OnDestroy` when a poolable object is destroyed from `Object.Instantiate`
+
 ## [v2.0.0] - 2023-11-18
 
 This major release has been created due to several breaking changes to the `ObjectPool` system.

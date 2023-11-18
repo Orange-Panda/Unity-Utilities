@@ -56,8 +56,8 @@ namespace LMirman.Utilities
 				return;
 			}
 
-			Debug.LogError("A poolable prefab was instantiated outside of the ObjectPool system!" +
-						   "Poolables must be created using the ObjectPool.Instantiate() method." +
+			Debug.LogError("A poolable prefab was instantiated outside of the ObjectPool system!\n" +
+						   "Poolables must be created using the ObjectPool.Instantiate() method.\n" +
 						   "This object will be destroyed to prevent the object from lingering forever.");
 			Destroy(gameObject);
 		}
@@ -114,6 +114,11 @@ namespace LMirman.Utilities
 
 		private void OnDestroy()
 		{
+			if (!IsPopulated)
+			{
+				return;
+			}
+
 			IsDisposed = true;
 			IsActive = false;
 			Identifier = InvalidIdentifier;
