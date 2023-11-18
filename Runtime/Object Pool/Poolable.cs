@@ -154,7 +154,7 @@ namespace LMirman.Utilities
 			public Poolable Poolable => IsActive ? poolable : null;
 
 			public static implicit operator bool(Instance instance) => instance.IsActive;
-			public static implicit operator Poolable(Instance instance) => instance.Poolable;
+			public static explicit operator Poolable(Instance instance) => instance.Poolable;
 
 			internal Instance(Poolable poolable)
 			{
