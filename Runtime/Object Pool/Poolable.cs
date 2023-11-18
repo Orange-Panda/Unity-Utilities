@@ -18,6 +18,19 @@ namespace LMirman.Utilities
 		public event Action ObjectReturned = delegate { };
 		public event Action ObjectDisposed = delegate { };
 
+		private void Start()
+		{
+			if (IsPopulated)
+			{
+				return;
+			}
+
+			Debug.LogError("A poolable prefab was instantiated outside of the ObjectPool system!" +
+						   "Poolables must be created using the ObjectPool.Instantiate() method." +
+						   "This object will be destroyed to prevent the object from lingering forever.");
+			Destroy(gameObject);
+		}
+
 		/// <summary>
 		/// Invoked by the <see cref="ObjectPool"/> when the object is created for the first time.
 		/// </summary>
