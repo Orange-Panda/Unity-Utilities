@@ -1,10 +1,20 @@
+using JetBrains.Annotations;
 using System;
 using UnityEngine;
 
 namespace LMirman.Utilities
 {
+	[PublicAPI]
 	public sealed class Poolable : MonoBehaviour
 	{
+		/// <summary>
+		/// Poolables with this identifier value are not currently active.
+		/// </summary>
+		public const int InvalidIdentifier = -1;
+		/// <summary>
+		/// The identifier value to be assigned to the next poolable retrieved. 
+		/// </summary>
+		private static int nextIdentifierValue = 1;
 		internal GameObject template;
 
 		public ObjectPool.PoolSettings poolSettings;
@@ -12,6 +22,14 @@ namespace LMirman.Utilities
 		public bool IsPopulated { get; private set; }
 		public bool IsActive { get; private set; }
 		public bool IsDisposed { get; private set; }
+		/// <summary>
+		/// A unique value assigned to this poolable when retrieved into the game world and revoked when returned to the object pool.
+		/// </summary>
+		/// <remarks>
+		/// Can be utilized to distinguish instances of a poolable object that has gone through the object pool cycle multiple times.<br/><br/>
+		/// It is recommended to use <see cref="CreateInstanceIdentity"/> to reference a poolable until it has been returned.
+		/// </remarks>
+		public int Identifier { get; private set; }
 
 		public event Action ObjectPopulated = delegate { };
 		public event Action ObjectRetrieved = delegate { };
@@ -52,6 +70,7 @@ namespace LMirman.Utilities
 		internal void OnRetrieved()
 		{
 			IsActive = true;
+			Identifier = PullIdentifierValue();
 			gameObject.SetActive(true);
 			ObjectRetrieved.Invoke();
 		}
@@ -65,13 +84,15 @@ namespace LMirman.Utilities
 			{
 				throw new Exception("There was an attempt to return a disposed object to the object pool!\nOnce an item has been disposed/destroyed it is unusable.");
 			}
-			else if (!IsActive)
+
+			if (!IsActive)
 			{
 				Debug.LogWarning("There was an attempt to return a poolable object into the object pool, but it is already inactive.");
 				return;
 			}
 
 			IsActive = false;
+			Identifier = InvalidIdentifier;
 			gameObject.SetActive(false);
 			transform.SetParent(null);
 			ObjectPool.NotifyObjectReturned(this);
@@ -82,8 +103,58 @@ namespace LMirman.Utilities
 		{
 			IsDisposed = true;
 			IsActive = false;
+			Identifier = InvalidIdentifier;
 			ObjectPool.NotifyObjectDisposed(this);
 			ObjectDisposed.Invoke();
+		}
+
+		/// <summary>
+		/// Create an instance identity for this poolable.
+		/// </summary>
+		/// <remarks>
+		/// Everytime this method is called it creates a new <see cref="Instance"/> object.
+		/// You are <i>highly</i> encouraged to only create an instance once when the the poolable object is instantiated.<br/><br/>
+		/// Usage of this method is <b>not</b> required to make use of the object pool system.
+		/// However, it does provide a native way to dereference a poolable object when it has been returned to the object pool.
+		/// </remarks>
+		/// <returns>Return a new <see cref="Instance"/> that points to this poolable until it is returned or disposed of.</returns>
+		[Pure]
+		public Instance CreateInstanceIdentity()
+		{
+			return new Instance(this);
+		}
+
+		private static int PullIdentifierValue()
+		{
+			int value = nextIdentifierValue;
+			nextIdentifierValue++;
+			return value;
+		}
+
+		[PublicAPI]
+		public class Instance
+		{
+			public readonly int identifier;
+			private readonly Poolable poolable;
+
+			public bool IsActive => poolable != null && identifier == poolable.Identifier;
+			public Poolable Poolable => IsActive ? poolable : null;
+
+			public static implicit operator bool(Instance instance) => instance.IsActive;
+			public static implicit operator Poolable(Instance instance) => instance.Poolable;
+
+			internal Instance(Poolable poolable)
+			{
+				if (poolable == null || poolable.Identifier == InvalidIdentifier)
+				{
+					this.poolable = null;
+					Debug.LogWarning("A poolable instance was created from an invalid poolable source. This is likely due to creating an instance from a returned or disposed poolable.");
+					return;
+				}
+
+				this.poolable = poolable;
+				identifier = poolable.Identifier;
+			}
 		}
 	}
 }

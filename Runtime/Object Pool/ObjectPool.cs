@@ -38,36 +38,36 @@ namespace LMirman.Utilities
 			return Pools[template].GetObject();
 		}
 
-		public static Poolable Instantiate(GameObject template)
+		public static Poolable.Instance Instantiate(GameObject template)
 		{
 			Poolable poolable = GetObject(template);
 			Pools[template].OnRetrieveObject(poolable);
-			return poolable;
+			return poolable.CreateInstanceIdentity();
 		}
 
-		public static Poolable Instantiate(GameObject template, Transform parent)
+		public static Poolable.Instance Instantiate(GameObject template, Transform parent)
 		{
 			Poolable poolable = GetObject(template);
 			poolable.transform.SetParent(parent);
 			Pools[template].OnRetrieveObject(poolable);
-			return poolable;
+			return poolable.CreateInstanceIdentity();
 		}
 
-		public static Poolable Instantiate(GameObject template, Vector3 position, Quaternion rotation, Space space = Space.World)
+		public static Poolable.Instance Instantiate(GameObject template, Vector3 position, Quaternion rotation, Space space = Space.World)
 		{
 			Poolable poolable = GetObject(template);
 			SetPositionAndRotation(poolable, position, rotation, space);
 			Pools[template].OnRetrieveObject(poolable);
-			return poolable;
+			return poolable.CreateInstanceIdentity();
 		}
 
-		public static Poolable Instantiate(GameObject template, Vector3 position, Quaternion rotation, Transform parent, Space space = Space.World)
+		public static Poolable.Instance Instantiate(GameObject template, Vector3 position, Quaternion rotation, Transform parent, Space space = Space.World)
 		{
 			Poolable poolable = GetObject(template);
 			poolable.transform.SetParent(parent);
 			SetPositionAndRotation(poolable, position, rotation, space);
 			Pools[template].OnRetrieveObject(poolable);
-			return poolable;
+			return poolable.CreateInstanceIdentity();
 		}
 
 		private static void SetPositionAndRotation(Poolable poolable, Vector3 position, Quaternion rotation, Space space)
