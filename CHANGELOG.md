@@ -3,7 +3,7 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [v2.0.0] - UNRELEASED
+## [v2.0.0] - 2023-11-18
 
 This major release has been created due to several breaking changes to the `ObjectPool` system.
 Upgrading to this release will require updating syntax of scripts that utilize poolables.
@@ -15,6 +15,11 @@ Upgrading to this release will require updating syntax of scripts that utilize p
 ### Changed
 - Poolable objects that are incorrectly created using `Object.Instantiate` are now immediately destroyed and log an error.
 - ⚠️Breaking: The `ObjectPool.Instantiate` methods now return a `Poolable.Instance` instead of the `Poolable` itself.
+  - To update: replace variable type with Poolable.Instance.
+  - Use `Poolable.Instance.IsActive` to check if the instance is not null
+    - Instances can be implicitly cast to bool for this check as well.
+  - Use `Poolable.Instance.Poolable` to access the Poolable behavior as before
+    - Will return null when the Poolable has been returned or disposed.
 
 ### Removed
 - ⚠️Breaking: Removed public access to `Poolable.poolSettings`
