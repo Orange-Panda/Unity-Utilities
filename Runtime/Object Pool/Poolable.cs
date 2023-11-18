@@ -147,6 +147,13 @@ namespace LMirman.Utilities
 		[PublicAPI]
 		public class Instance
 		{
+			/// <summary>
+			/// An invalid poolable instance.
+			/// </summary>
+			/// <remarks>
+			/// Useful as a default value for a poolable instance variable that is set conditionally.
+			/// </remarks>
+			public static Instance Invalid { get; private set; } = new Instance();
 			public readonly int identifier;
 			private readonly Poolable poolable;
 
@@ -155,6 +162,12 @@ namespace LMirman.Utilities
 
 			public static implicit operator bool(Instance instance) => instance.IsActive;
 			public static explicit operator Poolable(Instance instance) => instance.Poolable;
+
+			internal Instance()
+			{
+				poolable = null;
+				identifier = InvalidIdentifier;
+			}
 
 			internal Instance(Poolable poolable)
 			{
