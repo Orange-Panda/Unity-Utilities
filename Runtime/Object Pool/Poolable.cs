@@ -17,10 +17,22 @@ namespace LMirman.Utilities
 		private static int nextIdentifierValue = 1;
 		internal GameObject template;
 
-		public ObjectPool.PoolSettings poolSettings;
+		[SerializeField]
+		private ObjectPool.PoolSettings poolSettings;
 
+		/// <summary>
+		/// When true the object has been established into the ObjectPool system.<br/><br/>
+		/// A false value means the object was created with the standard Object.Instantiate method or the poolable is being accessed too early the lifecycle.
+		/// </summary>
 		public bool IsPopulated { get; private set; }
+		/// <summary>
+		/// When true the object is currently active in the game world.<br/><br/>
+		/// When false the object has either been disposed or is idle in a <see cref="ObjectPool.Pool"/>.
+		/// </summary>
 		public bool IsActive { get; private set; }
+		/// <summary>
+		/// When true the object has been disposed (deleted) and is considered unusable.
+		/// </summary>
 		public bool IsDisposed { get; private set; }
 		/// <summary>
 		/// A unique value assigned to this poolable when retrieved into the game world and revoked when returned to the object pool.
@@ -30,6 +42,7 @@ namespace LMirman.Utilities
 		/// It is recommended to use <see cref="CreateInstanceIdentity"/> to reference a poolable until it has been returned.
 		/// </remarks>
 		public int Identifier { get; private set; }
+		internal ObjectPool.PoolSettings PoolSettings => poolSettings;
 
 		public event Action ObjectPopulated = delegate { };
 		public event Action ObjectRetrieved = delegate { };

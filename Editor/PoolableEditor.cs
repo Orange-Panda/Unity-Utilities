@@ -8,19 +8,22 @@ namespace LMirman.Utilities
 	{
 		public override void OnInspectorGUI()
 		{
-			Poolable poolable = serializedObject.targetObject as Poolable;
-			if (poolable != null)
+			if (Application.isPlaying)
 			{
-				poolable.poolSettings.capacityLimitBehavior = (ObjectPool.PoolLimitBehavior)EditorGUILayout.EnumPopup("Pool Capacity Limit Behavior", poolable.poolSettings.capacityLimitBehavior);
-				if (poolable.poolSettings.capacityLimitBehavior != ObjectPool.PoolLimitBehavior.None)
-				{
-					poolable.poolSettings.poolCapacity = EditorGUILayout.IntField("Pool Capacity", Mathf.Max(poolable.poolSettings.poolCapacity, 1));
-				}
+				EditorGUILayout.LabelField("Pool settings can't be modified during play mode.");
+				return;
 			}
-			else
+
+			SerializedProperty poolSettings = serializedObject.FindProperty("poolSettings");
+			SerializedProperty capacityLimitBehavior = poolSettings.FindPropertyRelative("capacityLimitBehavior");
+			SerializedProperty poolCapacity = poolSettings.FindPropertyRelative("poolCapacity");
+			EditorGUILayout.PropertyField(capacityLimitBehavior);
+			if (capacityLimitBehavior.intValue != (int)ObjectPool.PoolLimitBehavior.None)
 			{
-				EditorGUILayout.LabelField("Editor error finding poolable.");
+				poolCapacity.intValue = EditorGUILayout.IntField("Pool Capacity", Mathf.Max(poolCapacity.intValue, 1));
 			}
+
+			serializedObject.ApplyModifiedProperties();
 		}
 	}
 }

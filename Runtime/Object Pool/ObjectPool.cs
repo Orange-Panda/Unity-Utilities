@@ -115,6 +115,7 @@ namespace LMirman.Utilities
 			}
 		}
 
+		[PublicAPI]
 		public class Pool
 		{
 			/// <summary>
@@ -144,13 +145,12 @@ namespace LMirman.Utilities
 				this.template = template;
 				if (template.TryGetComponent(out Poolable poolable))
 				{
-					settings = poolable.poolSettings.Copy();
-					settings.poolCapacity = Mathf.Max(settings.poolCapacity, 1);
+					settings = poolable.PoolSettings.Copy();
 				}
 				else
 				{
-					throw new ArgumentException(
-						"The template provided does not have a \"Poolable\" component attached!\nEnsure there is a poolable component present and it is at the root level of the template.");
+					throw new ArgumentException("The template provided does not have a \"Poolable\" component attached!\n" +
+												"Ensure there is a poolable component present and it is at the root level of the template.");
 				}
 			}
 
@@ -160,28 +160,27 @@ namespace LMirman.Utilities
 				{
 					return RetrieveIdleObject();
 				}
-				else if (activeObjects.Count >= settings.poolCapacity)
-				{
-					switch (settings.capacityLimitBehavior)
-					{
-						case PoolLimitBehavior.None:
-						case PoolLimitBehavior.DisposeOnReturn:
-							return PopulateNewObject();
-						case PoolLimitBehavior.RetrieveOldestActive:
-							return RetrieveOldest();
-						case PoolLimitBehavior.RecycleOldestActive:
-							return RecycleOldest();
-						case PoolLimitBehavior.RejectPopulation:
-							return null;
-						case PoolLimitBehavior.ThrowException:
-							throw new Exception("Tried to instantiate a pooled object but the pool is at capacity!");
-						default:
-							throw new ArgumentOutOfRangeException();
-					}
-				}
-				else
+
+				if (activeObjects.Count < settings.PoolCapacity)
 				{
 					return PopulateNewObject();
+				}
+
+				switch (settings.CapacityLimitBehavior)
+				{
+					case PoolLimitBehavior.None:
+					case PoolLimitBehavior.DisposeOnReturn:
+						return PopulateNewObject();
+					case PoolLimitBehavior.RetrieveOldestActive:
+						return RetrieveOldest();
+					case PoolLimitBehavior.RecycleOldestActive:
+						return RecycleOldest();
+					case PoolLimitBehavior.RejectPopulation:
+						return null;
+					case PoolLimitBehavior.ThrowException:
+						throw new Exception("Tried to instantiate a pooled object but the pool is at capacity!");
+					default:
+						throw new ArgumentOutOfRangeException();
 				}
 			}
 
@@ -189,18 +188,16 @@ namespace LMirman.Utilities
 			{
 				GameObject gameObject = Object.Instantiate(template);
 				gameObject.SetActive(false);
-				if (gameObject.TryGetComponent(out Poolable poolable))
-				{
-					populatedObjects.Add(poolable);
-					poolable.OnPopulated(template);
-					return poolable;
-				}
-				else
+				if (!gameObject.TryGetComponent(out Poolable poolable))
 				{
 					Object.Destroy(gameObject);
-					throw new ArgumentException(
-						"The template provided does not have a \"Poolable\" component attached!\nEnsure there is a poolable component present and it is at the root level of the template.");
+					throw new ArgumentException("The template provided does not have a \"Poolable\" component attached!\n" +
+												"Ensure there is a poolable component present and it is at the root level of the template.");
 				}
+
+				populatedObjects.Add(poolable);
+				poolable.OnPopulated(template);
+				return poolable;
 			}
 
 			private Poolable RetrieveOldest()
@@ -241,7 +238,8 @@ namespace LMirman.Utilities
 					throw new Exception(
 						$"The poolable object \"{poolable.name}\" tried to return to the pool but it is no longer being tracked.\nThis is likely a result of Returning to pool after being disposed or an internal error.");
 				}
-				else if (idleObjects.Contains(poolable))
+
+				if (idleObjects.Contains(poolable))
 				{
 					throw new Exception(
 						$"The poolable object \"{poolable.name}\" tried to return to the pool but it is already in the idle pool!\nAvoid invoking Return() on the Poolable object when it is not currently active.");
@@ -253,7 +251,7 @@ namespace LMirman.Utilities
 				// Dispose of excessive objects if the idle pool is over capacity.
 				// We compare to the idle objects pool instead of populatedObjects so we can at least somewhat benefit from the pool.
 				// If we were to use populatedObjects it would just perpetually create/destroy objects when over capacity, defeating the purpose of the pool system.
-				if (settings.capacityLimitBehavior == PoolLimitBehavior.DisposeOnReturn && idleObjects.Count > settings.poolCapacity)
+				if (settings.CapacityLimitBehavior == PoolLimitBehavior.DisposeOnReturn && idleObjects.Count > settings.PoolCapacity)
 				{
 					Object.Destroy(poolable.gameObject);
 				}
@@ -281,14 +279,14 @@ namespace LMirman.Utilities
 				{
 					invokeTargets.Enqueue(poolable);
 				}
-				
+
 				while (invokeTargets.Count > 0)
 				{
 					Poolable target = invokeTargets.Dequeue();
 					Object.Destroy(target.gameObject);
 				}
 			}
-			
+
 			/// <summary>
 			/// Return all <see cref="activeObjects"/> to the <see cref="idleObjects"/> and then dispose of everything.
 			/// </summary>
@@ -305,7 +303,7 @@ namespace LMirman.Utilities
 					Poolable target = invokeTargets.Dequeue();
 					target.Return();
 				}
-				
+
 				DisposeIdle();
 			}
 		}
@@ -314,20 +312,24 @@ namespace LMirman.Utilities
 		public class PoolSettings
 		{
 			[Tooltip("What behavior the pool should have when the pool is at/beyond its capacity.")]
-			public PoolLimitBehavior capacityLimitBehavior = PoolLimitBehavior.None;
+			[SerializeField]
+			private PoolLimitBehavior capacityLimitBehavior = PoolLimitBehavior.None;
 
 			[Tooltip("The maximum number of objects to keep in the object pool. Only relevant if \"capacityLimitBehavior\" is enabled")]
-			public int poolCapacity = 32;
+			[SerializeField]
+			private int poolCapacity = 32;
+
+			public PoolLimitBehavior CapacityLimitBehavior => capacityLimitBehavior;
+			public int PoolCapacity => poolCapacity;
 
 			public PoolSettings()
 			{
-
 			}
 
 			public PoolSettings(PoolLimitBehavior capacityLimitBehavior, int poolCapacity)
 			{
 				this.capacityLimitBehavior = capacityLimitBehavior;
-				this.poolCapacity = poolCapacity;
+				this.poolCapacity = Mathf.Max(poolCapacity, 1);
 			}
 
 			public PoolSettings Copy()

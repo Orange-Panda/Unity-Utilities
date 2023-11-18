@@ -3,6 +3,25 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v2.0.0] - UNRELEASED
+
+This major release has been created due to several breaking changes to the `ObjectPool` system.
+Upgrading to this release will require updating syntax of scripts that utilize poolables.
+
+### Added
+- Added `Poolable.Instance` class, enabling usage of poolables that expire when the object is returned.
+- Added `Poolable.Identifier` property: a unique id that is assigned to a poolable when retrieved and revoked when returned.
+
+### Changed
+- Poolable objects that are incorrectly created using `Object.Instantiate` are now immediately destroyed and log an error.
+- ⚠️Breaking: The `ObjectPool.Instantiate` methods now return a `Poolable.Instance` instead of the `Poolable` itself.
+
+### Removed
+- ⚠️Breaking: Removed public access to `Poolable.poolSettings`
+  - The pool settings defined on the Poolable component should not be modified at runtime.
+- ⚠️Breaking: Removed set access for values of `PoolSettings`
+  - Modifying these values directly had very erratic behavior.
+
 ## [v1.10.0] - 2023-11-15
 
 ### Added
