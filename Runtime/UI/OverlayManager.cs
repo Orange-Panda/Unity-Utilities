@@ -12,22 +12,26 @@ namespace LMirman.Utilities
 	[PublicAPI]
 	public class OverlayManager : MonoBehaviour
 	{
+		[Tooltip("The transform to use as the parent for created overlays. Will use this transform if not specified.")]
+		[SerializeField]
+		private Transform desiredOverlayParent;
 		[SerializeField]
 		private OverlayEntry[] overlays = Array.Empty<OverlayEntry>();
-	
+
 		private Dictionary<string, OverlayEntry> lookup = new Dictionary<string, OverlayEntry>();
-	
+		private Transform FallbackTransform => desiredOverlayParent ? desiredOverlayParent : transform;
+
 		/// <summary>
 		/// The current interface set active via <see cref="SetActiveInterface(OverlayInterface)"/>.
 		/// Null if there is no active interface.
 		/// </summary>
 		public OverlayInterface ActiveInterface { get; set; }
-	
+
 		/// <summary>
 		/// Invoked when an interface is set active via <see cref="SetActiveInterface(OverlayInterface)"/>.
 		/// </summary>
 		public event Action InterfaceOpened = delegate { };
-	
+
 		private void Awake()
 		{
 			lookup = new Dictionary<string, OverlayEntry>();
@@ -46,7 +50,7 @@ namespace LMirman.Utilities
 			{
 				if (overlay.loadImmediately && !overlay.Loaded)
 				{
-					overlay.LoadOverlay(transform);
+					overlay.LoadOverlay(overlay.DetermineParent(FallbackTransform));
 				}
 			}
 		}
@@ -81,13 +85,13 @@ namespace LMirman.Utilities
 				{
 					Debug.LogError($"Tried to get overlay \"{key}\" but no such overlay was present.");
 				}
-			
+
 				return null;
 			}
-		
+
 			if (!entry.Loaded)
 			{
-				entry.LoadOverlay(transform);
+				entry.LoadOverlay(entry.DetermineParent(FallbackTransform));
 			}
 
 			return entry.Overlay;
@@ -115,9 +119,9 @@ namespace LMirman.Utilities
 			{
 				if (!entry.Loaded)
 				{
-					entry.LoadOverlay(transform);
+					entry.LoadOverlay(entry.DetermineParent(FallbackTransform));
 				}
-			
+
 				SetActiveInterface(entry.Overlay);
 			}
 			else
@@ -142,7 +146,7 @@ namespace LMirman.Utilities
 				}
 			}
 		}
-	
+
 		/// <summary>
 		/// <b>Immediately</b> close all interfaces that are open.
 		/// </summary>
@@ -167,16 +171,26 @@ namespace LMirman.Utilities
 			public GameObject prefab;
 			[Tooltip("Usually overlays are instantiated when they are first opened. Enable this to instantiate them when the overlay manager is first started.")]
 			public bool loadImmediately;
-		
+			[Tooltip("The parent this overlay would prefer to be instantiated as a child of. Only used through DetermineParent() functionality.")]
+			[SerializeField]
+			private Transform desiredParent;
+
 			/// <summary>
 			/// When true signifies that the <see cref="prefab"/> has been instantiated and is ready to be used.
 			/// </summary>
 			public bool Loaded { get; private set; }
+
 			/// <summary>
 			/// The <see cref="prefab"/> instance that has been instantiated.
 			/// </summary>
 			public GameObject InstanceObject { get; private set; }
+
 			public OverlayInterface Overlay { get; private set; }
+
+			public Transform DetermineParent(Transform fallbackParent)
+			{
+				return desiredParent != null ? desiredParent : fallbackParent;
+			}
 
 			/// <summary>
 			/// Spawn the overlay instance if it has not already been loaded.
@@ -198,7 +212,7 @@ namespace LMirman.Utilities
 					Debug.LogError($"Overlay \"{InstanceObject.name}\" does not have a OverlayInterface component.");
 					return;
 				}
-			
+
 				Overlay.SetVisualActive(false);
 			}
 		}
