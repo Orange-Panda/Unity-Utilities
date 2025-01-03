@@ -73,11 +73,24 @@ namespace LMirman.Utilities
 		/// </summary>
 		/// <param name="current">The color whose RGB value will be used</param>
 		/// <param name="target">The color whose alpha values will be used</param>
-		/// <returns>The resulting color using <see cref="current"/>'s RGB value and <see cref="target"/>'s value value</returns>
+		/// <returns>The resulting color using <see cref="current"/>'s RGB value and <see cref="target"/>'s value</returns>
 		[Pure]
 		public static Color SetA(this Color current, Color target)
 		{
 			current.a = target.a;
+			return current;
+		}
+
+		/// <summary>
+		/// Modify the <see cref="current"/> color's alpha value to the <see cref="target"/> alpha value while maintaining <see cref="current"/>'s RGB value.
+		/// </summary>
+		/// <param name="current">The color whose RGB value will be used</param>
+		/// <param name="target">The alpha value to set</param>
+		/// <returns>The resulting color using <see cref="current"/>'s RGB value and <see cref="target"/> alpha value</returns>
+		[Pure]
+		public static Color SetA(this Color current, float target)
+		{
+			current.a = target;
 			return current;
 		}
 
@@ -101,7 +114,7 @@ namespace LMirman.Utilities
 		/// <param name="vector">The source vector to transform.</param>
 		/// <param name="degrees">
 		/// The degrees to rotate the vector about the Z axis.
-		/// Uses the same rotation rules as Unity's left handed coordinate system: positive values rotate counter clockwise, negative values rotate clockwise.
+		/// Uses the same rotation rules as Unity's left-handed coordinate system: positive values rotate counter-clockwise, negative values rotate clockwise.
 		/// </param>
 		/// <returns>The resulting Vector2 from the rotation transformation.</returns>
 		[Pure]

@@ -1,9 +1,11 @@
+using JetBrains.Annotations;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace LMirman.Utilities
 {
+	[PublicAPI]
 	public static class Encryption
 	{
 		/// <summary>
@@ -22,18 +24,18 @@ namespace LMirman.Utilities
 			public abstract byte[] Encrypt(string message);
 			public abstract string Decrypt(byte[] message);
 		}
-	
+
 		public class AesEncryptor : Encryptor
 		{
 			private readonly byte[] key;
 			private readonly byte[] initialValue;
-		
+
 			public AesEncryptor(string key, string initialValue)
 			{
 				this.key = Encoding.UTF8.GetBytes(key);
 				this.initialValue = Encoding.UTF8.GetBytes(initialValue);
 			}
-		
+
 			public override byte[] Encrypt(string message)
 			{
 				using AesManaged aes = new AesManaged();

@@ -14,9 +14,20 @@ namespace LMirman.Utilities
 	[PublicAPI]
 	public class GameFile<T>
 	{
-		public event Action<GameFile<T>> OnFileWritten = delegate { };
-		public event Action<GameFile<T>> OnFileRead = delegate { };
-		public event Action<GameFile<T>> OnFileDeleted = delegate { };
+		/// <summary>
+		/// Invoked at the end of <see cref="WriteFileAsBytes"/> and <see cref="WriteFileAsJson"/> methods.
+		/// </summary>
+		public event Action<GameFile<T>> FileWritten = delegate { };
+
+		/// <summary>
+		/// Invoked at the end of <see cref="LoadDataFromBytes"/>, <see cref="LoadDataFromJson"/>, <see cref="ReadFileFromBytes"/>, and <see cref="ReadFileFromJson"/> methods.
+		/// </summary>
+		public event Action<GameFile<T>> FileRead = delegate { };
+
+		/// <summary>
+		/// Invoked at the end of <see cref="DeleteBytesFile"/> and <see cref="DeleteJsonFile"/> methods.
+		/// </summary>
+		public event Action<GameFile<T>> FileDeleted = delegate { };
 
 		/// <summary>
 		/// The directory of this file relative to <see cref="Application.persistentDataPath"/>.
@@ -65,13 +76,13 @@ namespace LMirman.Utilities
 		/// Determines if <see cref="Data"/> has been written to or loaded.
 		/// </summary>
 		/// <remarks>
-		/// This is relevant for the <see cref="WriteFile"/> function: which will refuse to save if the data has not been validated yet.
-		/// This value can be set publicly so it is your responsibility to let the GameFile know your data is has been initialized.
+		/// This is relevant for the <see cref="WriteFile()"/> function: which will refuse to save if the data has not been validated yet.
+		/// This value can be set publicly so it is your responsibility to let the GameFile know your data has been initialized.
 		/// </remarks>
 		public bool ValidData { get; set; }
 
 		/// <summary>
-		/// The data which is to be read/written to the file. 
+		/// The data which is to be read/written to the file.
 		/// </summary>
 		/// <remarks>
 		/// Ensure that <see cref="T"/> is serializable or else the data may not save as expected.
@@ -79,9 +90,17 @@ namespace LMirman.Utilities
 		public T Data { get; set; }
 
 		/// <summary>
-		/// The path this file will save to depending on the value of <see cref="fileType"/>.
+		/// The absolute path this file will save to depending on the value of <see cref="fileType"/>.
 		/// </summary>
+		/// <seealso cref="dataPath"/>
+		/// <seealso cref="jsonPath"/>
 		public string Path => fileType == FileType.Encrypted ? dataPath : jsonPath;
+
+		/// <summary>
+		/// The local path within <see cref="Application.persistentDataPath"/> this file will save to depending on the value of <see cref="fileType"/>.
+		/// </summary>
+		/// <seealso cref="localDataPath"/>
+		/// <seealso cref="localJsonPath"/>
 		public string LocalPath => fileType == FileType.Encrypted ? localDataPath : localJsonPath;
 
 		#region Last Sync Times
@@ -125,73 +144,92 @@ namespace LMirman.Utilities
 		}
 
 		#region Get Functions
+		/// <returns>This file's <see cref="Data"/> object as a byte array depending on value of <see cref="fileType"/></returns>
 		public byte[] GetDataAsByteArray()
 		{
-			switch (fileType)
+			return fileType switch
 			{
-				case FileType.Encrypted:
-					return GetDataAsEncryptedByteArray();
-				case FileType.RawJson:
-					return GetDataAsJsonByteArray();
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+				FileType.Encrypted => GetDataAsEncryptedByteArray(),
+				FileType.RawJson => GetDataAsJsonByteArray(),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 		}
 
+		/// <returns>The <paramref name="data"/> parameter as a byte array depending on value of <see cref="fileType"/></returns>
 		public byte[] GetDataAsByteArray(T data)
 		{
-			switch (fileType)
+			return fileType switch
 			{
-				case FileType.Encrypted:
-					return GetDataAsEncryptedByteArray(data);
-				case FileType.RawJson:
-					return GetDataAsJsonByteArray(data);
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+				FileType.Encrypted => GetDataAsEncryptedByteArray(data),
+				FileType.RawJson => GetDataAsJsonByteArray(data),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 		}
 
+		/// <returns>This file's <see cref="Data"/> object as an encrypted byte array</returns>
 		public byte[] GetDataAsEncryptedByteArray()
 		{
 			return GetDataAsEncryptedByteArray(Data);
 		}
 
+		/// <returns>The <paramref name="data"/> parameter as an encrypted byte array</returns>
 		public byte[] GetDataAsEncryptedByteArray(T data)
 		{
 			string json = JsonConvert.SerializeObject(data, Formatting.None, jsonSerializeSettings);
 			return encryptor.Encrypt(json);
 		}
 
+		/// <returns>This file's <see cref="Data"/> object as a json byte array</returns>
 		public byte[] GetDataAsJsonByteArray()
 		{
 			return GetDataAsJsonByteArray(Data);
 		}
 
+		/// <returns>The <paramref name="data"/> parameter as a json byte array</returns>
 		public byte[] GetDataAsJsonByteArray(T data)
 		{
 			string json = JsonConvert.SerializeObject(data, Formatting.None, jsonSerializeSettings);
 			return Encoding.UTF8.GetBytes(json);
 		}
 
-		public T GetDataFromByteArray(byte[] bytes)
+		/// <summary>
+		/// Convert a byte array into an object of type <typeparamref name="T"/> depending on <see cref="fileTypeValue"/> parameter.
+		/// </summary>
+		public T GetDataFromByteArray(byte[] bytes, FileType fileTypeValue)
 		{
-			switch (fileType)
+			return fileType switch
 			{
-				case FileType.Encrypted:
-					return GetDataFromEncryptedByteArray(bytes);
-				case FileType.RawJson:
-					return GetDataFromJsonByteArray(bytes);
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+				FileType.Encrypted => GetDataFromEncryptedByteArray(bytes),
+				FileType.RawJson => GetDataFromJsonByteArray(bytes),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 		}
 
+		/// <summary>
+		/// Convert a byte array into an object of type <typeparamref name="T"/> depending on this file's <see cref="fileType"/> value.
+		/// </summary>
+		public T GetDataFromByteArray(byte[] bytes)
+		{
+			return fileType switch
+			{
+				FileType.Encrypted => GetDataFromEncryptedByteArray(bytes),
+				FileType.RawJson => GetDataFromJsonByteArray(bytes),
+				_ => throw new ArgumentOutOfRangeException()
+			};
+		}
+
+		/// <summary>
+		/// Convert an encrypted byte array into an object of type <typeparamref name="T"/>.
+		/// </summary>
 		public T GetDataFromEncryptedByteArray(byte[] bytes)
 		{
 			string jsonData = encryptor.Decrypt(bytes);
 			return JsonConvert.DeserializeObject<T>(jsonData, jsonDeserializeSettings);
 		}
 
+		/// <summary>
+		/// Convert a json byte array into an object of type <typeparamref name="T"/>.
+		/// </summary>
 		public T GetDataFromJsonByteArray(byte[] bytes)
 		{
 			string jsonData = Encoding.UTF8.GetString(bytes);
@@ -200,14 +238,24 @@ namespace LMirman.Utilities
 		#endregion
 
 		#region Write File Functionality
+		/// <inheritdoc cref="WriteFile(FileType)"/>
 		/// <summary>
-		/// Write the current <see cref="Data"/> to the system storage. 
+		/// Write the current <see cref="Data"/> to the system storage in format of this file's <see cref="fileType"/>.
+		/// </summary>
+		public bool WriteFile()
+		{
+			return WriteFile(fileType);
+		}
+
+		/// <summary>
+		/// Write the current <see cref="Data"/> to the system storage in specified format.
 		/// </summary>
 		/// <remarks>
 		/// Will reject the attempt if <see cref="ValidData"/> is not true. Consider validating the data before attempting to write it.
 		/// </remarks>
+		/// <param name="fileTypeValue">The format to write the file as</param>
 		/// <returns>True if the write attempt was successful, false if it was not.</returns>
-		public bool WriteFile()
+		public bool WriteFile(FileType fileTypeValue)
 		{
 			if (!ValidData)
 			{
@@ -217,7 +265,7 @@ namespace LMirman.Utilities
 				return false;
 			}
 
-			switch (fileType)
+			switch (fileTypeValue)
 			{
 				case FileType.Encrypted:
 					WriteFileAsBytes();
@@ -236,16 +284,16 @@ namespace LMirman.Utilities
 		{
 			Directory.CreateDirectory(fileDirectory);
 			File.WriteAllBytes(dataPath, GetDataAsEncryptedByteArray());
-			OnFileWritten.Invoke(this);
 			UpdateFileSyncTime();
+			FileWritten.Invoke(this);
 		}
 
 		private void WriteFileAsJson()
 		{
 			Directory.CreateDirectory(fileDirectory);
 			File.WriteAllBytes(jsonPath, GetDataAsJsonByteArray());
-			OnFileWritten.Invoke(this);
 			UpdateFileSyncTime();
+			FileWritten.Invoke(this);
 		}
 		#endregion
 
@@ -259,51 +307,52 @@ namespace LMirman.Utilities
 		/// <returns>True if the data was loaded, false if it was not (such as when the file does not exist).</returns>
 		public bool ReadFile()
 		{
-			switch (fileType)
+			return fileType switch
 			{
-				case FileType.Encrypted:
-					return ReadFileFromBytes();
-				case FileType.RawJson:
-					return ReadFileFromJson();
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+				FileType.Encrypted => ReadFileFromBytes(),
+				FileType.RawJson => ReadFileFromJson(),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 		}
 
 		private bool ReadFileFromBytes()
 		{
-			if (PeekFileFromBytes(out T data))
-			{
-				Data = data;
-				ValidData = true;
-				OnFileRead.Invoke(this);
-				UpdateFileSyncTime();
-				return true;
-			}
-			else
+			if (!PeekFileFromBytes(out T data))
 			{
 				return false;
 			}
+
+			Data = data;
+			ValidData = true;
+			UpdateFileSyncTime();
+			FileRead.Invoke(this);
+			return true;
 		}
 
 		private bool ReadFileFromJson()
 		{
-			if (PeekFileFromJson(out T data))
-			{
-				Data = data;
-				ValidData = true;
-				OnFileRead.Invoke(this);
-				UpdateFileSyncTime();
-				return true;
-			}
-			else
+			if (!PeekFileFromJson(out T data))
 			{
 				return false;
 			}
+
+			Data = data;
+			ValidData = true;
+			UpdateFileSyncTime();
+			FileRead.Invoke(this);
+			return true;
 		}
 		#endregion
 
 		#region Load Data Functionality
+		/// <summary>
+		/// Load a specific byte array into this file's <see cref="Data"/>.
+		/// </summary>
+		/// <remarks>
+		/// Typically you should use the <see cref="ReadFile"/> method instead.
+		/// </remarks>
+		/// <seealso cref="ReadFile"/>
+		/// <seealso cref="GetDataAsByteArray()"/>
 		public void LoadData(byte[] bytes)
 		{
 			switch (fileType)
@@ -323,31 +372,36 @@ namespace LMirman.Utilities
 		{
 			Data = GetDataFromEncryptedByteArray(bytes);
 			ValidData = true;
-			OnFileRead.Invoke(this);
 			UpdateFileSyncTime();
+			FileRead.Invoke(this);
 		}
 
 		private void LoadDataFromJson(byte[] bytes)
 		{
 			Data = GetDataFromJsonByteArray(bytes);
 			ValidData = true;
-			OnFileRead.Invoke(this);
 			UpdateFileSyncTime();
+			FileRead.Invoke(this);
 		}
 		#endregion
 
 		#region Peek File Functionality
+		/// <summary>
+		/// Observe the contents of the game file on disk <b><i>without</i></b> loading it into <see cref="Data"/>.
+		/// </summary>
+		/// <remarks>
+		/// Useful for displaying or comparing contents of the save file on disk without overwriting <see cref="Data"/>.
+		/// </remarks>
+		/// <param name="data">The contents of the file, if peek was successful.</param>
+		/// <returns>True if the file exists and had its contents output to <paramref name="data"/>.</returns>
 		public bool PeekFile(out T data)
 		{
-			switch (fileType)
+			return fileType switch
 			{
-				case FileType.Encrypted:
-					return PeekFileFromBytes(out data);
-				case FileType.RawJson:
-					return PeekFileFromJson(out data);
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+				FileType.Encrypted => PeekFileFromBytes(out data),
+				FileType.RawJson => PeekFileFromJson(out data),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 		}
 
 		private bool PeekFileFromBytes(out T data)
@@ -382,20 +436,17 @@ namespace LMirman.Utilities
 		/// Delete the file on the disk.
 		/// </summary>
 		/// <remarks>
-		/// This function does not reset the value of <see cref="Data"/>.
+		/// This function does <b>not</b> reset the value of <see cref="Data"/>.
 		/// </remarks>
 		/// <returns>True if it existed and has now been deleted, false if it was not present.</returns>
 		public bool DeleteFile()
 		{
-			switch (fileType)
+			return fileType switch
 			{
-				case FileType.Encrypted:
-					return DeleteBytesFile();
-				case FileType.RawJson:
-					return DeleteJsonFile();
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+				FileType.Encrypted => DeleteBytesFile(),
+				FileType.RawJson => DeleteJsonFile(),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 		}
 
 		private bool DeleteBytesFile()
@@ -406,7 +457,7 @@ namespace LMirman.Utilities
 			}
 
 			File.Delete(dataPath);
-			OnFileDeleted.Invoke(this);
+			FileDeleted.Invoke(this);
 			return true;
 		}
 
@@ -418,7 +469,7 @@ namespace LMirman.Utilities
 			}
 
 			File.Delete(jsonPath);
-			OnFileDeleted.Invoke(this);
+			FileDeleted.Invoke(this);
 			return true;
 		}
 		#endregion
@@ -427,7 +478,7 @@ namespace LMirman.Utilities
 		/// <summary>
 		/// Migrate the file at <see cref="jsonPath"/> to the <see cref="dataPath"/> thus encrypting it.
 		/// </summary>
-		/// <returns>True if the json file exists and was migrated properly, false if it was not able to be migrated.</returns>
+		/// <returns>True if the json file exists and was migrated properly, false if it was not able to migrate.</returns>
 		public bool ImportJsonToBytes()
 		{
 			if (!File.Exists(jsonPath))
@@ -445,7 +496,7 @@ namespace LMirman.Utilities
 		/// <summary>
 		/// Migrate the file at <see cref="dataPath"/> to the <see cref="jsonPath"/> thus decrypting it.
 		/// </summary>
-		/// <returns>True if the data file exists and was migrated properly, false if it was not able to be migrated.</returns>
+		/// <returns>True if the data file exists and was migrated properly, false if it was not able to migrate.</returns>
 		public bool ExportBytesToJson()
 		{
 			if (!File.Exists(dataPath))
@@ -468,7 +519,7 @@ namespace LMirman.Utilities
 			errorArgs.ErrorContext.Handled = true;
 		}
 		#endregion
-		
+
 		/// <summary>
 		/// Updates the sync state variables to the current time.
 		/// Manually invoke this if the loaded data is in sync with the system file.
@@ -480,6 +531,9 @@ namespace LMirman.Utilities
 			LastSyncSystemTime = DateTime.UtcNow.Ticks;
 		}
 
+		/// <summary>
+		/// Definition of the format a file should be saved to the disk as.
+		/// </summary>
 		public enum FileType
 		{
 			/// <summary>

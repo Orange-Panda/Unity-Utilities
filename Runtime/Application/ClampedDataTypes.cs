@@ -6,7 +6,7 @@ namespace LMirman.Utilities
 	/// <summary>
 	/// A datatype that is always kept between a minimum and maximum value.
 	/// </summary>
-	/// <typeparam name="T">Type for the value you want to keep keep track of and limit within the boundaries</typeparam>
+	/// <typeparam name="T">Type for the value you want to keep track of and limit within the boundaries</typeparam>
 	[Serializable]
 	public class ClampedValue<T> where T : IComparable
 	{
@@ -140,7 +140,7 @@ namespace LMirman.Utilities
 	/// }
 	/// </code>
 	/// </example>
-	/// <typeparam name="T">Type for the value you want to keep keep track of and limit within the boundaries</typeparam>
+	/// <typeparam name="T">Type for the value you want to keep track of and limit within the boundaries</typeparam>
 	public class ClampedField<T> : ClampedValue<T> where T : IComparable
 	{
 		[JsonIgnore]
