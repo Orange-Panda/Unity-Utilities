@@ -23,6 +23,7 @@ namespace LMirman.Utilities.UI
 		/// True when there is a panel active and it has a parent node to return to.
 		/// </summary>
 		public bool HasParentPanel => currentItem != null && currentItem.ParentPanel != null;
+
 		/// <summary>
 		/// True when there is a panel active and it does <b>not</b> have a parent node to return to.
 		/// </summary>
@@ -33,10 +34,12 @@ namespace LMirman.Utilities.UI
 		/// </summary>
 		public void Return()
 		{
-			if (currentItem)
+			if (!currentItem)
 			{
-				currentItem.OnReturn(this);
+				return;
 			}
+
+			currentItem.OnReturn(this);
 		}
 	}
 }

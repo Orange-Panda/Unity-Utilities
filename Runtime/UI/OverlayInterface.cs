@@ -14,10 +14,10 @@ namespace LMirman.Utilities.UI
 	{
 		[Header("Overlay Interface")]
 		[Tooltip("Default selectable to highlight on Open")]
-		public Selectable selectable;
+		protected Selectable selectable;
 		[Tooltip("The item that is always enabled and disabled when this overlay is active.")]
-		public GameObject container;
-		
+		protected GameObject container;
+
 		protected OverlayManager overlayManager;
 		protected GraphicRaycaster raycaster;
 		protected Canvas canvas;
@@ -26,6 +26,7 @@ namespace LMirman.Utilities.UI
 		/// Is this overlay interface currently active and in focus?
 		/// </summary>
 		public bool IsOpen { get; private set; }
+
 		/// <summary>
 		/// Should the cursor or other input features be revealed that are normally hidden during game while this overlay is active?
 		/// </summary>
@@ -33,6 +34,7 @@ namespace LMirman.Utilities.UI
 		/// This doesn't implicitly do anything but can be overriden and tested against to reveal the cursor during overlays or whatever your application needs.
 		/// </remarks>
 		public virtual bool RevealInput => true;
+
 		/// <summary>
 		/// When this overlay is active should input elsewhere be allowed?
 		/// </summary>
@@ -86,7 +88,7 @@ namespace LMirman.Utilities.UI
 		/// Invoked by the overlay system to set the visual state of the overlay.
 		/// </summary>
 		/// <param name="value">If the overlay should be visible or not.</param>
-		internal virtual void SetVisualActive(bool value)
+		public virtual void SetVisualActive(bool value)
 		{
 			canvas.enabled = value;
 			raycaster.enabled = value;

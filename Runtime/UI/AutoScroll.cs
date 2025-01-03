@@ -7,10 +7,12 @@ using UnityEngine.UI;
 namespace LMirman.Utilities.UI
 {
 	/// <summary>
-	/// By default a <see cref="Selectable"/> does not cause the <see cref="ScrollRect"/> to update it's value. 
-	/// This script, when attached to a <see cref="ScrollRect"/>, will update the <see cref="scrollRect"/>'s <see cref="ScrollRect.verticalNormalizedPosition"/> to include the rect of
+	/// Component which when attached to a <see cref="ScrollRect"/>, will update the <see cref="scrollRect"/>'s <see cref="ScrollRect.verticalNormalizedPosition"/> to include the rect of
 	/// a <see cref="Selectable"/> that is nested within <see cref="ScrollRect.content"/> when a new <see cref="Selectable"/> is selected.
 	/// </summary>
+	/// <remarks>
+	/// Without this component attached a <see cref="Selectable"/> does not cause the <see cref="ScrollRect"/> to update its value.
+	/// </remarks>
 	[RequireComponent(typeof(ScrollRect)), PublicAPI]
 	public class AutoScroll : MonoBehaviour
 	{
@@ -18,7 +20,7 @@ namespace LMirman.Utilities.UI
 		private bool affectHorizontal = true;
 		[SerializeField, Tooltip("Should the auto scroll component control the vertical (up-down) scroll position?")]
 		private bool affectVertical = true;
-		
+
 		private List<Selectable> candidates;
 		private ScrollRect scrollRect;
 		private GameObject lastSelection;
@@ -26,7 +28,7 @@ namespace LMirman.Utilities.UI
 
 		private readonly Vector3[] selectableWorld = new Vector3[4];
 		private readonly Vector3[] scrollWorld = new Vector3[4];
-		
+
 		public bool AffectHorizontal { get => affectHorizontal; set => affectHorizontal = value; }
 		public bool AffectVertical { get => affectVertical; set => affectVertical = value; }
 
@@ -56,6 +58,11 @@ namespace LMirman.Utilities.UI
 
 		private void LateUpdate()
 		{
+			FocusCurrentSelectable();
+		}
+
+		private void FocusCurrentSelectable()
+		{
 			if (EventSystem.current == null || EventSystem.current.currentSelectedGameObject == null || EventSystem.current.currentSelectedGameObject == lastSelection)
 			{
 				return;
@@ -67,7 +74,7 @@ namespace LMirman.Utilities.UI
 		}
 
 		/// <summary>
-		/// Adjust the <see cref="scrollRect"/> position to show the <paramref name="selectable"/> if it is a child of the scroll rect and outside of its viewport. 
+		/// Adjust the <see cref="scrollRect"/> position to show the <paramref name="selectable"/> if it is a child of the scroll rect and outside of its viewport.
 		/// </summary>
 		/// <remarks>
 		/// This is automatically invoked when a new selectable in the <see cref="scrollRect"/> is selected so you shouldn't need to call this in most cases.
@@ -94,22 +101,22 @@ namespace LMirman.Utilities.UI
 			{
 				return;
 			}
-			
+
 			// Determine the range in which the current content is visible
 			float scrollSize = Mathf.Clamp01(scrollRect.viewport.rect.height / scrollRect.content.rect.height);
 			float t = scrollRect.verticalNormalizedPosition;
 			Vector2 visibleRange = new Vector2(Mathf.Lerp(0, 1 - scrollSize, t), Mathf.Lerp(scrollSize, 1, t));
-			
+
 			// Padding that will add a little extra space forward the selectable when it is made visible.
 			float padding = scrollSize / 40f;
-			
+
 			// Calculate the height of the scroll content and the top/bottom offsets of the selectable within the scroll rect.
 			float scrollHeight = Mathf.Abs(scrollWorld[1].y - scrollWorld[0].y);
 			float topDistance = Mathf.Abs(scrollWorld[1].y - selectableWorld[1].y);
 			float topNormalizedPosition = 1 - (topDistance / scrollHeight);
 			float botDistance = Mathf.Abs(scrollWorld[1].y - selectableWorld[0].y);
 			float botNormalizedPosition = 1 - (botDistance / scrollHeight);
-			
+
 			// Check if top is within range
 			if (topNormalizedPosition > visibleRange.y)
 			{
@@ -129,7 +136,7 @@ namespace LMirman.Utilities.UI
 			{
 				return;
 			}
-			
+
 			// Determine the range in which the current content is visible
 			float scrollSize = Mathf.Clamp01(scrollRect.viewport.rect.width / scrollRect.content.rect.width);
 			float t = scrollRect.horizontalNormalizedPosition;
@@ -137,7 +144,7 @@ namespace LMirman.Utilities.UI
 
 			// Padding that will add a little extra space forward the selectable when it is made visible.
 			float padding = scrollSize / 40f;
-			
+
 			// Calculate the width of the scroll content and the left/right offsets of the selectable within the scroll rect.
 			float scrollWidth = Mathf.Abs(scrollWorld[2].x - scrollWorld[1].x);
 			float leftDistance = Mathf.Abs(scrollWorld[1].x - selectableWorld[1].x);

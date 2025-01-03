@@ -13,20 +13,20 @@ namespace LMirman.Utilities.UI
 		[Header("Panel Options")]
 		[SerializeField]
 		[Tooltip("An optional selectable component to select on the event system when this panel is set active.")]
-		private GameObject initialSelectable;
-		[SerializeField] 
+		protected GameObject initialSelectable;
+		[SerializeField]
 		[Tooltip("The panel to set active when this panel is cancelled. If no parent is defined, the ability to return out of this panel is disabled.")]
-		private Panel parentPanel;
-	
+		protected Panel parentPanel;
+
 		[Header("Parent Override Rules")]
 		[SerializeField]
 		[Tooltip("When true, clear a parent panel override when this panel is disabled.")]
-		private bool clearParentOverrideOnDisable;
+		protected bool clearParentOverrideOnDisable;
 		[SerializeField]
 		[Tooltip("When true, clear a parent panel override when this panel is returned from.")]
-		private bool clearParentOverrideOnReturn = true;
+		protected bool clearParentOverrideOnReturn = true;
 
-		private Panel parentOverride;
+		protected Panel parentOverride;
 
 		public Panel ParentPanel => parentOverride != null ? parentOverride : parentPanel;
 
@@ -46,14 +46,16 @@ namespace LMirman.Utilities.UI
 
 		public virtual void OnReturn(PanelGroup group)
 		{
-			if (ParentPanel)
+			if (!ParentPanel)
 			{
-				group.SetActiveItem(ParentPanel.Key);
+				return;
+			}
 
-				if (clearParentOverrideOnReturn)
-				{
-					ClearParentOverride();
-				}
+			group.SetActiveItem(ParentPanel.Key);
+
+			if (clearParentOverrideOnReturn)
+			{
+				ClearParentOverride();
 			}
 		}
 
@@ -61,7 +63,7 @@ namespace LMirman.Utilities.UI
 		{
 			parentOverride = panel;
 		}
-	
+
 		public void ClearParentOverride()
 		{
 			parentOverride = null;

@@ -24,18 +24,18 @@ namespace LMirman.Utilities.UI
 		private TMP_Text descriptionTextMesh;
 		[SerializeField]
 		[Tooltip("Text to automatically set when the confirmation window is initialized.")]
-		private TMP_Text submitTextMesh;	
+		private TMP_Text submitTextMesh;
 		[SerializeField]
 		[Tooltip("Text to automatically set when the confirmation window is initialized.")]
 		private TMP_Text cancelTextMesh;
-	
+
 		private Action onSubmit;
 		private Action onCancel;
-	
+
 		/// <summary>
 		/// Invoked when the confirmation window is initialized.
 		/// </summary>
-		public event Action<Request> OnInitialize = delegate {  };
+		public event Action<Request> OnInitialize = delegate { };
 
 		private void OnEnable()
 		{
@@ -57,6 +57,7 @@ namespace LMirman.Utilities.UI
 				onSubmit.Invoke();
 				ClearActions();
 			}
+
 			Destroy(gameObject);
 		}
 
@@ -70,6 +71,7 @@ namespace LMirman.Utilities.UI
 				onCancel.Invoke();
 				ClearActions();
 			}
+
 			Destroy(gameObject);
 		}
 
@@ -116,7 +118,7 @@ namespace LMirman.Utilities.UI
 			/// The canvas under which the request should be created.
 			/// </summary>
 			public readonly Canvas canvas;
-		
+
 			/// <summary>
 			/// The action to invoke when the user submits.
 			/// This could be considered the 'positive' response such as accepting a question.
@@ -133,7 +135,7 @@ namespace LMirman.Utilities.UI
 			/// Back out of making a reset to the user's preferences.
 			/// </example>
 			public readonly Action onCancel;
-		
+
 			/// <summary>
 			/// The title of the request.
 			/// </summary>
@@ -166,7 +168,8 @@ namespace LMirman.Utilities.UI
 			/// <summary>
 			/// Create a new request format to send to the <see cref="UIFunctions.CreateConfirmationWindow(Request)"/>.
 			/// </summary>
-			public Request(Canvas canvas, Action onSubmit, Action onCancel, string title = "Request", string description = "Are you sure?", string submitText = "Submit", string cancelText = "Cancel")
+			public Request(Canvas canvas, Action onSubmit, Action onCancel, string title = "Request", string description = "Are you sure?", string submitText = "Submit",
+				string cancelText = "Cancel")
 			{
 				this.canvas = canvas;
 				this.onSubmit = onSubmit;

@@ -14,12 +14,12 @@ namespace LMirman.Utilities.UI
 	{
 		[Tooltip("The transform to use as the parent for created overlays. Will use this transform if not specified.")]
 		[SerializeField]
-		private Transform desiredOverlayParent;
+		protected Transform desiredOverlayParent;
 		[SerializeField]
-		private OverlayEntry[] overlays = Array.Empty<OverlayEntry>();
+		protected OverlayEntry[] overlays = Array.Empty<OverlayEntry>();
 
-		private Dictionary<string, OverlayEntry> lookup = new Dictionary<string, OverlayEntry>();
-		private Transform FallbackTransform => desiredOverlayParent ? desiredOverlayParent : transform;
+		protected Dictionary<string, OverlayEntry> lookup = new Dictionary<string, OverlayEntry>();
+		protected Transform FallbackTransform => desiredOverlayParent ? desiredOverlayParent : transform;
 
 		/// <summary>
 		/// The current interface set active via <see cref="SetActiveInterface(OverlayInterface)"/>.
@@ -32,7 +32,7 @@ namespace LMirman.Utilities.UI
 		/// </summary>
 		public event Action InterfaceOpened = delegate { };
 
-		private void Awake()
+		protected virtual void Awake()
 		{
 			lookup = new Dictionary<string, OverlayEntry>();
 			foreach (OverlayEntry entry in overlays)
@@ -41,7 +41,7 @@ namespace LMirman.Utilities.UI
 			}
 		}
 
-		private void Start()
+		protected virtual void Start()
 		{
 			ClearInterfaces();
 

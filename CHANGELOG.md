@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Add `SetA(this Color, float)` extension method
 - Add a few methods to `GameFile` to specify type of file to write
 - Add `CompareOptions` parameter to `LookupTable` constructor allowing customization of how keys are compared. 
+- Add `TryGetPreviousTab` and `TryGetNextTab` functions to `TabGroup`
+- Add `OverflowScrolling` public get-only property to `TabGroup`
 
 ### Changed
 
@@ -25,6 +27,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - The `InBounds` extension method now targets the `ICollection` interface allowing it to be used generically instead of just arrays and lists.
 - ⚠️Breaking: Rename `GameFile` events to no longer begin with `On` term
 - Improved documentation of many public methods (especially `GameFile`)
+- ⚠️Breaking: Adjust the accessibility of many UI functions and fields
 
 ## [v2.1.0] - 2024-06-25
 

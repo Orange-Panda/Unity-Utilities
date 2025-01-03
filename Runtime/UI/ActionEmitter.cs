@@ -50,6 +50,7 @@ namespace LMirman.Utilities.UI
 			{
 				Actions[index].onTrigger.Invoke();
 			}
+
 			InvokeActionsUpdated();
 		}
 
@@ -65,7 +66,7 @@ namespace LMirman.Utilities.UI
 			{
 				Actions.Add(null);
 			}
-		
+
 			Actions[index] = function;
 			InvokeActionsUpdated();
 		}
@@ -79,6 +80,7 @@ namespace LMirman.Utilities.UI
 			{
 				Actions[i] = null;
 			}
+
 			InvokeActionsUpdated();
 		}
 
@@ -91,7 +93,7 @@ namespace LMirman.Utilities.UI
 		{
 			return index.InBounds(Actions) ? Actions[index] : null;
 		}
-	
+
 		/// <summary>
 		/// An action that can be invoked by an <see cref="ActionEmitter"/>
 		/// </summary>

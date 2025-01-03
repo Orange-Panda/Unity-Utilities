@@ -11,7 +11,7 @@ namespace LMirman.Utilities.UI
 		[Header("Tab Options")]
 		[SerializeField]
 		[Tooltip("An optional selectable component to select on the event system when this tab is set active.")]
-		private GameObject initialSelectable;
+		protected GameObject initialSelectable;
 
 		public override void SetActive(bool value)
 		{
