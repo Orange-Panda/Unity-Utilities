@@ -1,10 +1,11 @@
+using LMirman.Utilities.UI;
 using UnityEditor;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.Editor
 {
 	[CustomEditor(typeof(AspectRatioCalculator))]
-	public class AspectRatioCalculatorEditor : Editor
+	public class AspectRatioCalculatorEditor : UnityEditor.Editor
 	{
 		public override void OnInspectorGUI()
 		{

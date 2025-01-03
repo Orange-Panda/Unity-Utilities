@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using System;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.ObjectPool
 {
 	[PublicAPI]
 	public sealed class Poolable : MonoBehaviour

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.UI
 {
 	/// <summary>
 	/// Generic way to create dynamic/contextual actions.

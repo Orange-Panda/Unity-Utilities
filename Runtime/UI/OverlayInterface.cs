@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.UI
 {
 	/// <summary>
 	/// Abstract base class for an overlay within the <see cref="OverlayManager"/> system.

@@ -4,7 +4,7 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED] - UNRELEASED
+## [v3.0.0] - UNRELEASED
 
 ### Added
 
@@ -12,7 +12,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Changed
 
-- 
+- ⚠️Breaking: Most classes have been moved to a new namespace to separate the package into different groups (to avoid some name conflicts)
+	- Editor: `LMirman.Utilities` -> `LMirman.Utilities.Editor`
+    - UI: `LMirman.Utilities` -> `LMirman.Utilities.UI`
+    - Object Pool: `LMirman.Utilities` -> `LMirman.Utilities.ObjectPool`
+    - Editor Tests: `LMirman.Utilities.Tests.Editor`
+    - Runtime Tests: `LMirman.Utilities.Tests.Runtime`
+    - Some classes remain unchanged in the `LMirman.Utilities` namespace
 
 ## [v2.1.0] - 2024-06-25
 

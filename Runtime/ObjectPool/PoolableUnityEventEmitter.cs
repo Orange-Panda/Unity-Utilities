@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.ObjectPool
 {
 	/// <summary>
 	/// Built in component for the <see cref="Poolable"/> object that will automatically fire a UnityEvent when the matching C# event is invoked on <see cref="Poolable"/>.

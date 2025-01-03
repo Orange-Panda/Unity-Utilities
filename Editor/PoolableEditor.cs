@@ -1,10 +1,11 @@
+using LMirman.Utilities.ObjectPool;
 using UnityEditor;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.Editor
 {
 	[CustomEditor(typeof(Poolable))]
-	public class PoolableEditor : Editor
+	public class PoolableEditor : UnityEditor.Editor
 	{
 		public override void OnInspectorGUI()
 		{
@@ -18,7 +19,7 @@ namespace LMirman.Utilities
 			SerializedProperty capacityLimitBehavior = poolSettings.FindPropertyRelative("capacityLimitBehavior");
 			SerializedProperty poolCapacity = poolSettings.FindPropertyRelative("poolCapacity");
 			EditorGUILayout.PropertyField(capacityLimitBehavior);
-			if (capacityLimitBehavior.intValue != (int)ObjectPool.PoolLimitBehavior.None)
+			if (capacityLimitBehavior.intValue != (int)ObjectPool.ObjectPool.PoolLimitBehavior.None)
 			{
 				poolCapacity.intValue = EditorGUILayout.IntField("Pool Capacity", Mathf.Max(poolCapacity.intValue, 1));
 			}

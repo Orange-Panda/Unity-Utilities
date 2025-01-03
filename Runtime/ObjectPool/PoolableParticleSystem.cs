@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.ObjectPool
 {
 	/// <summary>
 	/// Built in implementation for recycling particle systems using the <see cref="ObjectPool"/> system.

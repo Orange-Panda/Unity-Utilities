@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.UI
 {
 	/// <summary>
 	/// Handles an overlay system which is designed to display user input ui during the application.

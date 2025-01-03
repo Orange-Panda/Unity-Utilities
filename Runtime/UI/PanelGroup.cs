@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.UI
 {
 	/// <summary>
 	/// A panel group is a hierarchy of ui elements where each panel refers to a parent element that can be returned to.<br/>

@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.ObjectPool
 {
 	/// <summary>
 	/// Built in component for the <see cref="Poolable"/> that will automatically return it to the object pool after some time has passed.

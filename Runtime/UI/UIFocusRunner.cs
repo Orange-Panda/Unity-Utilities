@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.UI
 {
 	/// <summary>
 	/// In scene runner that will prevent certain UI functionality when focus is intended to be on something else.

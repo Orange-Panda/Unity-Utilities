@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.ObjectPool
 {
 	/// <summary>
 	/// An optional <see cref="MonoBehaviour"/> class that automatically subscribes to C# events of the <see cref="Poolable"/> to make implementation easier.

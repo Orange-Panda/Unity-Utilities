@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.ObjectPool
 {
 	[PublicAPI]
 	public static class ObjectPool

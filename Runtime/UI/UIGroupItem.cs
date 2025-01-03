@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.UI
 {
 	/// <summary>
 	/// A ui element to fill in a <see cref="UIGroup{T}"/> with.

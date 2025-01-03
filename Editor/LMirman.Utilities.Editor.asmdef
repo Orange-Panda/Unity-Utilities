@@ -1,6 +1,6 @@
 {
     "name": "LMirman.Utilities.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "LMirman.Utilities",
     "references": [
         "GUID:7c32082be04a5ab48a0b3c7882090528"
     ],

@@ -1,6 +1,6 @@
 {
     "name": "LMirman.Utilities.Editor.Tests",
-    "rootNamespace": "",
+    "rootNamespace": "LMirman.Utilities.Tests",
     "references": [
         "GUID:7c32082be04a5ab48a0b3c7882090528",
         "GUID:9b915a80f7c8d3f46a3bc0ae64765eb0",

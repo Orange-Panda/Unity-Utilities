@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.UI
 {
 	/// <summary>
 	/// A component that will automatically calculate the correct aspect ratio for an attached <see cref="AspectRatioFitter"/> based on an attached component that inherits <see cref="ILayoutElement"/>.
