@@ -10,7 +10,7 @@ namespace LMirman.Utilities
 	/// </summary>
 	/// <remarks>
 	/// This is useful for storing data values in cases where the setter does not want to explicitly point to a specific variable somewhere.
-	/// In such a case: setters only needs access to the bank where they can store and retrieve their values rather than needing to create new variables for everything.  
+	/// In such a case: setters only needs access to the bank where they can store and retrieve their values rather than needing to create new variables for everything.
 	/// </remarks>
 	[Serializable]
 	public class GenericDataBank
@@ -139,14 +139,14 @@ namespace LMirman.Utilities
 				}
 				else
 				{
-					value = default;
+					value = null;
 					return false;
 				}
 			}
 			catch (Exception e)
 			{
 				Debug.LogWarning($"Internal error occurred getting value, using default instead.\n{e}");
-				value = default;
+				value = null;
 				return false;
 			}
 		}
@@ -158,7 +158,7 @@ namespace LMirman.Utilities
 		/// <param name="defaultValue">The value to return if there was not a value defined at <see cref="key"/>.</param>
 		/// <typeparam name="T">The type of class to output the data as.</typeparam>
 		/// <returns>The class value in the data bank if it was present otherwise returns the <paramref name="defaultValue"/></returns>
-		public T GetClass<T>(string key, T defaultValue = default) where T : class
+		public T GetClass<T>(string key, T defaultValue = null) where T : class
 		{
 			if (TryGetClass(key, out T output))
 			{
@@ -201,7 +201,7 @@ namespace LMirman.Utilities
 						value = (T)convertibleValue;
 						return true;
 					}
-					
+
 					value = JsonConvert.DeserializeObject<T>(json);
 					return true;
 				}

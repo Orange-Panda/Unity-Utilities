@@ -8,11 +8,11 @@ namespace LMirman.Utilities.ObjectPool
 	public sealed class Poolable : MonoBehaviour
 	{
 		/// <summary>
-		/// Poolables with this identifier value are not currently active.
+		/// Poolable objects with this identifier value are not currently active.
 		/// </summary>
 		public const int InvalidIdentifier = -1;
 		/// <summary>
-		/// The identifier value to be assigned to the next poolable retrieved. 
+		/// The identifier value to be assigned to the next poolable retrieved.
 		/// </summary>
 		private static int nextIdentifierValue = 1;
 		internal GameObject template;
@@ -57,7 +57,7 @@ namespace LMirman.Utilities.ObjectPool
 			}
 
 			Debug.LogError("A poolable prefab was instantiated outside of the ObjectPool system!\n" +
-						   "Poolables must be created using the ObjectPool.Instantiate() method.\n" +
+						   "Poolable objects must be created using the ObjectPool.Instantiate() method.\n" +
 						   "This object will be destroyed to prevent the object from lingering forever.");
 			Destroy(gameObject);
 		}
@@ -131,7 +131,7 @@ namespace LMirman.Utilities.ObjectPool
 		/// </summary>
 		/// <remarks>
 		/// Everytime this method is called it creates a new <see cref="Instance"/> object.
-		/// You are <i>highly</i> encouraged to only create an instance once when the the poolable object is instantiated.<br/><br/>
+		/// You are <i>highly</i> encouraged to only create an instance once when the poolable object is instantiated.<br/><br/>
 		/// Usage of this method is <b>not</b> required to make use of the object pool system.
 		/// However, it does provide a native way to dereference a poolable object when it has been returned to the object pool.
 		/// </remarks>

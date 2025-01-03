@@ -119,7 +119,7 @@ namespace LMirman.Utilities.ObjectPool
 		public class Pool
 		{
 			/// <summary>
-			/// All of the pooled objects regardless of active status
+			/// All the pooled objects regardless of active status
 			/// </summary>
 			private readonly List<Poolable> populatedObjects = new List<Poolable>();
 
@@ -217,7 +217,7 @@ namespace LMirman.Utilities.ObjectPool
 
 			private Poolable RetrieveIdleObject()
 			{
-				return idleObjects[idleObjects.Count - 1];
+				return idleObjects[^1];
 			}
 
 			internal void OnRetrieveObject(Poolable poolable)
@@ -345,7 +345,7 @@ namespace LMirman.Utilities.ObjectPool
 			/// </summary>
 			/// <remarks>
 			/// The pool can have theoretically unlimited objects populating it.
-			/// Useful if you know you are going to need a uncertain amount of objects but will never have an excessive amount at any time.
+			/// Useful if you know you are going to need an uncertain amount of objects but will never have an excessive amount at any time.
 			/// </remarks>
 			None,
 

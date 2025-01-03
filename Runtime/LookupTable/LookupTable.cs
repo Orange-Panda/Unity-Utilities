@@ -1,6 +1,7 @@
-using LMirman.Utilities;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 
@@ -10,16 +11,18 @@ namespace LMirman.Utilities
 	/// An asset based dictionary that pairs a string key with an arbitrary <see cref="T"/> object.
 	/// </summary>
 	/// <typeparam name="T">The object type to use for the values in the lookup table.</typeparam>
+	[PublicAPI]
 	public class LookupTable<T> where T : ILookupCollectionEntry
 	{
 		private readonly string resourcePath;
-	
+
 		/// <summary>
 		/// The lookup table asset in the project.
 		/// </summary>
 		/// <remarks>Avoid utilizing this at runtime! The main purpose of this being public to enable you to write editor scripts to modify the asset itself.</remarks>
 		public LookupCollectionAsset<T> Asset { get; private set; }
-		public Dictionary<string, T> Lookup { get; } = new Dictionary<string, T>();
+
+		public Dictionary<string, T> Lookup { get; }
 		public List<T> List { get; } = new List<T>();
 		public T DefaultValue { get; private set; }
 
@@ -28,8 +31,10 @@ namespace LMirman.Utilities
 		/// </summary>
 		/// <param name="resourcePath">The path to use when loading the asset from resources using <see cref="Resources.Load(string)"/></param>
 		/// <param name="immediateReload">Should the constructor automatically call <see cref="ReloadResource"/>?</param>
-		public LookupTable(string resourcePath, bool immediateReload = false)
+		/// <param name="compareOptions">Options specifying how to find entries in the lookup table</param>
+		public LookupTable(string resourcePath, bool immediateReload = false, CompareOptions compareOptions = CompareOptions.Ordinal)
 		{
+			Lookup = new Dictionary<string, T>(StringComparer.Create(CultureInfo.InvariantCulture, compareOptions));
 			this.resourcePath = resourcePath;
 
 			if (immediateReload)
@@ -51,13 +56,12 @@ namespace LMirman.Utilities
 			{
 				foreach (T entry in Asset.Entries)
 				{
-					if (Lookup.ContainsKey(entry.Key))
+					if (!Lookup.TryAdd(entry.Key, entry))
 					{
 						Debug.LogError($"Duplicate key found with value {entry.Key}");
 						continue;
 					}
-				
-					Lookup.Add(entry.Key, entry);
+
 					List.Add(entry);
 				}
 
@@ -107,41 +111,4 @@ namespace LMirman.Utilities
 			return value;
 		}
 	}
-}
-
-public abstract class LookupCollectionAsset<T> : ScriptableObject where T : ILookupCollectionEntry
-{
-	public abstract IEnumerable<T> Entries { get; }
-
-	public abstract void InsertEntry(T entry);
-
-	public virtual T DefaultValue => default;
-}
-
-public interface ILookupCollectionEntry
-{
-	/// <summary>
-	/// The key value for the entry in the <see cref="LookupTable{T}"/>.
-	/// </summary>
-	/// <remarks>
-	/// It is encouraged that your keys follow the following rules, although for most not necessarily required for the lookup table to function.<br/>
-	///  - The key should not be null or white space.<br/>
-	///  - The key should not be shared by any other object within the lookup table.<br/>
-	///  - The key should not contain any spaces.<br/>
-	///  - The key should only use lowercase alphanumeric characters. (0-9, a-z)<br/>
-	///  - The key should not include any accented or exotic ascii characters.<br/>
-	/// </remarks>
-	public string Key { get; }
-}
-
-[Serializable]
-public class GenericLookupEntry<T> : ILookupCollectionEntry
-{
-	[SerializeField]
-	private string key;
-	[SerializeField]
-	private T value;
-	
-	public string Key => key;
-	public T Value => value;
 }
