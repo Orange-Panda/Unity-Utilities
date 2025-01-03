@@ -18,7 +18,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
     - Object Pool: `LMirman.Utilities` -> `LMirman.Utilities.ObjectPool`
     - Editor Tests: `LMirman.Utilities.Tests.Editor`
     - Runtime Tests: `LMirman.Utilities.Tests.Runtime`
-    - Some classes remain unchanged in the `LMirman.Utilities` namespace
+    - All other classes are in the `LMirman.Utilities` namespace
+- Update some extension methods to have `[Pure]` attribute, notifying if return value is unused (these methods have no consequences if return value unused)
+- The `InBounds` extension method now targets the `ICollection` interface allowing it to be used generically instead of just arrays and lists.
 
 ## [v2.1.0] - 2024-06-25
 
