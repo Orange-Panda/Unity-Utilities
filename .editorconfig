@@ -260,6 +260,8 @@ csharp_preserve_single_line_blocks = true
 csharp_style_namespace_declarations = file_scoped:warning
 
 # Rider options
+resharper_use_array_empty_method_highlighting = none
+resharper_keep_existing_initializer_arrangement = true
 resharper_check_namespace_highlighting = warning
 resharper_arrange_object_creation_when_type_evident_highlighting = none
 resharper_parameter_hides_member_highlighting = suggestion
