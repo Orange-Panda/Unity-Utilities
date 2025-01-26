@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LMirman.Utilities.Tests.Editor
 {
@@ -11,7 +12,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void HasKey_DoesHaveKey_ReturnsTrue()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 
 			stubData.SetStruct(key, true);
@@ -23,7 +24,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void HasKey_DoesNotHaveKey_ReturnsFalse()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 
 			bool actual = stubData.HasKey(key);
@@ -36,7 +37,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetStruct_FloatValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			float expected = 0.9f;
 
@@ -49,7 +50,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetStruct_IntValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			int expected = 10;
 
@@ -62,7 +63,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetStruct_BoolValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			bool expected = true;
 
@@ -75,7 +76,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetStruct_ByteValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			byte expected = 2;
 
@@ -88,7 +89,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetStruct_CharValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			char expected = 'a';
 
@@ -101,7 +102,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetStruct_DoesHaveValue_ReturnsTrue()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 
 			stubData.SetStruct(key, true);
@@ -113,7 +114,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetStruct_DoesNotHaveValue_ReturnsFalse()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 
 			bool actual = stubData.TryGetStruct(key, out bool _);
@@ -128,7 +129,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase("\n")]
 		public void TryGetStruct_EdgeCaseInput_DoesNotThrow(string key)
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			int expected = 10;
 
 			stubData.SetStruct(key, expected);
@@ -140,9 +141,12 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetStruct_LargeEntryCount_CanFunction()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 
-			void code()
+			Assert.DoesNotThrow(Code);
+			return;
+
+			void Code()
 			{
 				for (int i = 0; i < 10000; i++)
 				{
@@ -150,14 +154,12 @@ namespace LMirman.Utilities.Tests.Editor
 					stubData.TryGetStruct(i.ToString(), out int _);
 				}
 			}
-
-			Assert.DoesNotThrow(code);
 		}
 
 		[Test]
 		public void GetStruct_DoesHaveValue_ReturnsSetValue()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			bool expected = true;
 
@@ -170,7 +172,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void GetStruct_DoesNotHaveValue_ReturnsDefault()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			bool expected = true;
 
@@ -184,7 +186,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetClass_StringValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			string expected = "value";
 
@@ -197,7 +199,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetClass_StringValue_OriginalChangeDoesNotPost()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			string expected = "value";
 
@@ -211,7 +213,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetClass_SampleClass_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			SampleClass expected = new SampleClass(1, "value");
 
@@ -224,7 +226,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetClass_SampleClass_OriginalChangeDoesNotPost()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			SampleClass expected = new SampleClass(1, "value");
 
@@ -239,19 +241,20 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetClass_LargeEntryCount_CanFunction()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 
-			void code()
+			Assert.DoesNotThrow(Code);
+			return;
+
+			void Code()
 			{
 				for (int i = 0; i < 1000; i++)
 				{
 					SampleClass expected = new SampleClass(i, "value");
 					stubData.SetClass(i.ToString(), expected);
-					stubData.TryGetClass(i.ToString(), out SampleClass actual);
+					stubData.TryGetClass(i.ToString(), out SampleClass _);
 				}
 			}
-
-			Assert.DoesNotThrow(code);
 		}
 		#endregion
 
@@ -259,7 +262,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_FloatValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			float expected = 0.9f;
 
@@ -272,7 +275,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_IntValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			int expected = 10;
 
@@ -285,7 +288,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_BoolValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			bool expected = true;
 
@@ -298,7 +301,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_ByteValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			byte expected = 2;
 
@@ -311,7 +314,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_CharValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			char expected = 'a';
 
@@ -324,7 +327,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_DoesHaveValue_ReturnsTrue()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 
 			stubData.SetStruct(key, true);
@@ -336,7 +339,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_DoesNotHaveValue_ReturnsFalse()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 
 			bool actual = stubData.TryGetValue(key, out bool _);
@@ -351,7 +354,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase("\n")]
 		public void TryGetGeneralValue_EdgeCaseInput_DoesNotThrow(string key)
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			int expected = 10;
 
 			stubData.SetStruct(key, expected);
@@ -363,9 +366,12 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_LargeEntryCountStruct_CanFunction()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 
-			void code()
+			Assert.DoesNotThrow(Code);
+			return;
+
+			void Code()
 			{
 				for (int i = 0; i < 10000; i++)
 				{
@@ -373,14 +379,12 @@ namespace LMirman.Utilities.Tests.Editor
 					stubData.TryGetValue(i.ToString(), out int _);
 				}
 			}
-
-			Assert.DoesNotThrow(code);
 		}
 
 		[Test]
 		public void GetGeneralValue_DoesHaveValue_ReturnsSetValue()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			bool expected = true;
 
@@ -393,7 +397,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void GetGeneralValue_DoesNotHaveValue_ReturnsDefault()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			bool expected = true;
 
@@ -405,7 +409,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_IConvertibleStringValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			string expected = "value";
 
@@ -419,7 +423,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_IConvertibleIntValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			int expected = 4;
 
@@ -433,7 +437,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_StringValue_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			string expected = "value";
 
@@ -446,7 +450,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_StringValue_OriginalChangeDoesNotPost()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			string expected = "value";
 
@@ -460,7 +464,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_SampleClass_ValueMatches()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			SampleClass expected = new SampleClass(1, "value");
 
@@ -473,7 +477,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_SampleClass_OriginalChangeDoesNotPost()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			SampleClass expected = new SampleClass(1, "value");
 
@@ -488,19 +492,20 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void TryGetGeneralValue_LargeEntryCountClass_CanFunction()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 
-			void code()
+			Assert.DoesNotThrow(Code);
+			return;
+
+			void Code()
 			{
 				for (int i = 0; i < 1000; i++)
 				{
 					SampleClass expected = new SampleClass(i, "value");
 					stubData.SetClass(i.ToString(), expected);
-					stubData.TryGetValue(i.ToString(), out SampleClass actual);
+					stubData.TryGetValue(i.ToString(), out SampleClass _);
 				}
 			}
-
-			Assert.DoesNotThrow(code);
 		}
 		#endregion
 
@@ -508,7 +513,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void RemoveEntry_HadEntry_RemovesEntry()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key1";
 			bool expected = false;
 
@@ -522,7 +527,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void DeleteAllEntries_HadEntries_RemovesEntries()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key1";
 			bool expected = false;
 
@@ -538,7 +543,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void ReadWrite_JSONData_DoesMatch()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			SampleClass expected = new SampleClass(1, "value");
 
@@ -553,7 +558,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void ReadWrite_StringData_DoesMatch()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			string expected = "value";
 
@@ -568,7 +573,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void ReadWrite_FloatData_DoesMatch()
 		{
-			var stubData = new GenericDataBank();
+			GenericDataBank stubData = new GenericDataBank();
 			string key = "key";
 			float expected = 1;
 
@@ -606,6 +611,7 @@ namespace LMirman.Utilities.Tests.Editor
 				}
 			}
 
+			[SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
 			public override int GetHashCode()
 			{
 				int hashCode = 1042650979;

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -11,7 +12,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase(1.0, 0.0, 2.0)]
 		public void Value_Constructor_SetsInitialValue<T>(T initialValue, T min, T max) where T : IComparable
 		{
-			var stubData = new ClampedValue<T>(initialValue, min, max);
+			ClampedValue<T> stubData = new ClampedValue<T>(initialValue, min, max);
 
 			Assert.AreEqual(stubData.Value, initialValue);
 		}
@@ -21,7 +22,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase(0.0, 1.0, 2.0)]
 		public void Value_Constructor_ClampsToMin<T>(T initialValue, T min, T max) where T : IComparable
 		{
-			var stubData = new ClampedValue<T>(initialValue, min, max);
+			ClampedValue<T> stubData = new ClampedValue<T>(initialValue, min, max);
 
 			Assert.AreEqual(stubData.Value, min);
 		}
@@ -31,7 +32,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase(3.0, 1.0, 2.0)]
 		public void Value_Constructor_ClampsToMax<T>(T initialValue, T min, T max) where T : IComparable
 		{
-			var stubData = new ClampedValue<T>(initialValue, min, max);
+			ClampedValue<T> stubData = new ClampedValue<T>(initialValue, min, max);
 
 			Assert.AreEqual(stubData.Value, max);
 		}
@@ -41,7 +42,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase(1.0, 0.0, 2.0)]
 		public void Value_SetValue_SetsInitialValue<T>(T initialValue, T min, T max) where T : IComparable
 		{
-			var stubData = new ClampedValue<T>(min, min, max);
+			ClampedValue<T> stubData = new ClampedValue<T>(min, min, max);
 
 			stubData.Value = initialValue;
 
@@ -53,7 +54,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase(0.0, 1.0, 2.0)]
 		public void Value_SetValue_ClampsToMin<T>(T initialValue, T min, T max) where T : IComparable
 		{
-			var stubData = new ClampedValue<T>(max, min, max);
+			ClampedValue<T> stubData = new ClampedValue<T>(max, min, max);
 
 			stubData.Value = initialValue;
 
@@ -65,7 +66,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase(3.0, 1.0, 2.0)]
 		public void Value_SetValue_ClampsToMax<T>(T initialValue, T min, T max) where T : IComparable
 		{
-			var stubData = new ClampedValue<T>(min, min, max);
+			ClampedValue<T> stubData = new ClampedValue<T>(min, min, max);
 
 			stubData.Value = initialValue;
 
@@ -77,7 +78,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase(1.0, 0.0, 2.0)]
 		public void Value_ImplicitCast_IsValid<T>(T initialValue, T min, T max) where T : IComparable
 		{
-			var stubData = new ClampedValue<T>(min, min, max);
+			ClampedValue<T> stubData = new ClampedValue<T>(min, min, max);
 
 			stubData.Value = initialValue;
 			T value = stubData;
@@ -90,7 +91,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[TestCase(1.0, 0.0, 2.0)]
 		public void JsonSerialization_WriteRead_MaintainsValue<T>(T initialValue, T min, T max) where T : IComparable
 		{
-			var stubData = new ClampedValue<T>(initialValue, min, max);
+			ClampedValue<T> stubData = new ClampedValue<T>(initialValue, min, max);
 
 			string serialized = JsonConvert.SerializeObject(stubData);
 			ClampedValue<T> deserialized = JsonConvert.DeserializeObject<ClampedValue<T>>(serialized);
@@ -98,7 +99,7 @@ namespace LMirman.Utilities.Tests.Editor
 			Assert.AreEqual(deserialized.Value, initialValue);
 		}
 
-		[Serializable]
+		[Serializable, UsedImplicitly]
 		private class TestClassA
 		{
 			public ClampedField<int> clampedValue = new ClampedField<int>(25, 20, 30);
@@ -113,7 +114,7 @@ namespace LMirman.Utilities.Tests.Editor
 		[Test]
 		public void JsonSerialization_Encapsulated_UsesClassDefault()
 		{
-			var stubData = new TestClassA();
+			TestClassA stubData = new TestClassA();
 
 			string serialized = JsonConvert.SerializeObject(stubData);
 			TestClassB deserialized = JsonConvert.DeserializeObject<TestClassB>(serialized);
