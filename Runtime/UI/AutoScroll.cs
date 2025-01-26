@@ -29,6 +29,18 @@ namespace LMirman.Utilities.UI
 		private readonly Vector3[] selectableWorld = new Vector3[4];
 		private readonly Vector3[] scrollWorld = new Vector3[4];
 
+		/// <summary>
+		/// When true, this component will run <see cref="FocusCurrentSelectable"/> in LateUpdate().
+		/// When false, will not and <see cref="FocusCurrentSelectable"/> must be run manually from your own components.
+		/// </summary>
+		/// <remarks>
+		/// Always defaults to true.
+		/// </remarks>
+		/// <example>
+		/// You may want to set this to false if you need to control the scroll rect externally with values which would cause the current selection to be out of focus
+		/// </example>
+		public bool FocusEveryFrame { get; set; } = true;
+
 		public bool AffectHorizontal { get => affectHorizontal; set => affectHorizontal = value; }
 		public bool AffectVertical { get => affectVertical; set => affectVertical = value; }
 
@@ -58,7 +70,10 @@ namespace LMirman.Utilities.UI
 
 		private void LateUpdate()
 		{
-			FocusCurrentSelectable();
+			if (FocusEveryFrame)
+			{
+				FocusCurrentSelectable();
+			}
 		}
 
 		private void FocusCurrentSelectable()
@@ -74,7 +89,7 @@ namespace LMirman.Utilities.UI
 		}
 
 		/// <summary>
-		/// Adjust the <see cref="scrollRect"/> position to show the <paramref name="selectable"/> if it is a child of the scroll rect and outside of its viewport.
+		/// Adjust the <see cref="scrollRect"/> position to show the <paramref name="selectable"/> if it is a child of the scroll rect and outside its viewport.
 		/// </summary>
 		/// <remarks>
 		/// This is automatically invoked when a new selectable in the <see cref="scrollRect"/> is selected so you shouldn't need to call this in most cases.

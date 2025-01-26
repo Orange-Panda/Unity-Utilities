@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Add `TryGetPreviousTab` and `TryGetNextTab` functions to `TabGroup`
 - Add `OverflowScrolling` public get-only property to `TabGroup`
 - Add `ActionInvoked` event to `ActionEmitter`
+- Add `FocusEveryFrame` property to `AutoScroll` component to control the active state of the component
 
 ### Changed
 
