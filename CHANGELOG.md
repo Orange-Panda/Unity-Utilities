@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Confirmation window creation via `UIFunctions.CreateConfirmationWindow` now runs the `Close` event on previous window when creating a new window
 - Exposed `UIFunctions.CreateConfirmationWindow` creation through `MostRecentConfirmation` static property
 - Expose many `ConfirmationWindow` fields and methods to `protected` level to enable some custom behavior via inheritance
+- ⚠️Breaking: Change implementation of public serialized fields in `OverlayEntry` to protected serialized fields with public get-only properties
 
 ## [v2.1.0] - 2024-06-25
 

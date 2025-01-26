@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace LMirman.Utilities.UI
@@ -37,7 +38,7 @@ namespace LMirman.Utilities.UI
 			lookup = new Dictionary<string, OverlayEntry>();
 			foreach (OverlayEntry entry in overlays)
 			{
-				lookup.Add(entry.key, entry);
+				lookup.Add(entry.Key, entry);
 			}
 		}
 
@@ -48,7 +49,7 @@ namespace LMirman.Utilities.UI
 			// Load some overlays immediately if their functionality needs to exist in the scene before its first open request.
 			foreach (OverlayEntry overlay in overlays)
 			{
-				if (overlay.loadImmediately && !overlay.Loaded)
+				if (overlay.LoadImmediately && !overlay.Loaded)
 				{
 					overlay.LoadOverlay(overlay.DetermineParent(FallbackTransform));
 				}
@@ -138,12 +139,9 @@ namespace LMirman.Utilities.UI
 		/// </remarks>
 		private void CloseOpenInterfaces()
 		{
-			foreach (OverlayEntry entry in lookup.Values)
+			foreach (OverlayEntry entry in lookup.Values.Where(entry => entry.Loaded && entry.Overlay.IsOpen))
 			{
-				if (entry.Loaded && entry.Overlay.IsOpen)
-				{
-					entry.Overlay.Close();
-				}
+				entry.Overlay.Close();
 			}
 		}
 
@@ -162,18 +160,27 @@ namespace LMirman.Utilities.UI
 		/// <summary>
 		/// A particular overlay that the <see cref="OverlayManager"/> is responsible for.
 		/// </summary>
-		[Serializable]
+		[Serializable, PublicAPI]
 		public class OverlayEntry
 		{
 			[Tooltip("The id for this overlay. Used to set it active when there is no direct reference to the interface component.")]
-			public string key;
+			[SerializeField]
+			protected string key;
 			[Tooltip("The prefab to instantiate for the overlay at runtime.")]
-			public GameObject prefab;
+			[SerializeField]
+			protected GameObject prefab;
 			[Tooltip("Usually overlays are instantiated when they are first opened. Enable this to instantiate them when the overlay manager is first started.")]
-			public bool loadImmediately;
+			[SerializeField]
+			protected bool loadImmediately;
 			[Tooltip("The parent this overlay would prefer to be instantiated as a child of. Only used through DetermineParent() functionality.")]
 			[SerializeField]
-			private Transform desiredParent;
+			protected Transform desiredParent;
+
+			public string Key => key;
+
+			public GameObject Prefab => prefab;
+
+			public bool LoadImmediately => loadImmediately;
 
 			/// <summary>
 			/// When true signifies that the <see cref="prefab"/> has been instantiated and is ready to be used.
