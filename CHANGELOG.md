@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - Add `SetA(this Color, float)` extension method
 - Add a few methods to `GameFile` to specify type of file to write
-- Add `CompareOptions` parameter to `LookupTable` constructor allowing customization of how keys are compared. 
+- Add `StringComparer` parameter to `LookupTable` constructor allowing customization of how keys are compared. 
 - Add `TryGetPreviousTab` and `TryGetNextTab` functions to `TabGroup`
 - Add `OverflowScrolling` public get-only property to `TabGroup`
 - Add `ActionInvoked` event to `ActionEmitter`

@@ -31,10 +31,10 @@ namespace LMirman.Utilities.LookupTable
 		/// </summary>
 		/// <param name="resourcePath">The path to use when loading the asset from resources using <see cref="Resources.Load(string)"/></param>
 		/// <param name="immediateReload">Should the constructor automatically call <see cref="ReloadResource"/>?</param>
-		/// <param name="compareOptions">Options specifying how to find entries in the lookup table</param>
-		public LookupTable(string resourcePath, bool immediateReload = false, CompareOptions compareOptions = CompareOptions.Ordinal)
+		/// <param name="stringComparer">StringComparer specifying how to find entries in the lookup table</param>
+		public LookupTable(string resourcePath, bool immediateReload = false, StringComparer stringComparer = null)
 		{
-			Lookup = new Dictionary<string, T>(StringComparer.Create(CultureInfo.InvariantCulture, compareOptions));
+			Lookup = stringComparer == null ? new Dictionary<string, T>() : new Dictionary<string, T>(stringComparer);
 			this.resourcePath = resourcePath;
 
 			if (immediateReload)
