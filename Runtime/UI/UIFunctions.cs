@@ -16,19 +16,26 @@ namespace LMirman.Utilities.UI
 		/// When a UI element is in focus that means other ui elements should prevent certain inputs.
 		/// </remarks>
 		public static bool IsFocused => focusRunner != null && focusRunner.IsFocused;
-	
+
 		private static UIFocusRunner focusRunner;
-		private static ConfirmationWindow confirmationWindow;
-	
+
+		/// <summary>
+		/// The most recently create confirmation window using <see cref="CreateConfirmationWindow"/>
+		/// </summary>
+		[CanBeNull]
+		public static ConfirmationWindow MostRecentConfirmation { get; private set; }
+
 		private static void VerifyFocusInstance()
 		{
-			if (focusRunner == null)
+			if (focusRunner != null)
 			{
-				GameObject newFocus = new GameObject("UI Focus Runner");
-				focusRunner = newFocus.AddComponent<UIFocusRunner>();
+				return;
 			}
+
+			GameObject newFocus = new GameObject("UI Focus Runner");
+			focusRunner = newFocus.AddComponent<UIFocusRunner>();
 		}
-	
+
 		/// <summary>
 		/// Add an object to the <see cref="UIFocusRunner"/> to let other ui elements know that input should be ignored.
 		/// </summary>
@@ -53,23 +60,31 @@ namespace LMirman.Utilities.UI
 				focusRunner.Remove(blocker);
 			}
 		}
-	
+
 		/// <summary>
 		/// Create a <see cref="ConfirmationWindow"/> to fulfill a particular prompt for the user to submit/decline.
 		/// </summary>
-		public static void CreateConfirmationWindow(ConfirmationWindow.Request request)
+		/// <remarks>
+		/// If there is already a pending confirmation window will run `Close()` on it to dismiss it and create a new confirmation window.
+		/// </remarks>
+		public static void CreateConfirmationWindow(ConfirmationWindow.Request request, GameObject windowPrefab, Canvas canvas)
 		{
-			if (confirmationWindow == null)
+			if (MostRecentConfirmation != null)
 			{
-				GameObject windowObject = Object.Instantiate(Resources.Load<GameObject>("UI/Confirmation Window"), request.canvas != null ? request.canvas.transform : Object.FindObjectOfType<Canvas>().transform);
-				confirmationWindow = windowObject.GetComponent<ConfirmationWindow>();
+				MostRecentConfirmation.Close();
+				MostRecentConfirmation = null;
 			}
-			else if (!confirmationWindow.isActiveAndEnabled)
+
+			GameObject windowObject = Object.Instantiate(windowPrefab, canvas != null ? canvas.transform : Object.FindObjectOfType<Canvas>().transform);
+			MostRecentConfirmation = windowObject.GetComponent<ConfirmationWindow>();
+			if (MostRecentConfirmation == null)
 			{
-				confirmationWindow.gameObject.SetActive(true);
-				confirmationWindow.enabled = true;
+				Debug.LogError($"The window prefab provided of name \"{windowObject.name}\" does not have a ConfirmationWindow component! " +
+				               "The component may not be on a child object", windowObject);
+				return;
 			}
-			confirmationWindow.Initialize(request);
+
+			MostRecentConfirmation.Initialize(request);
 		}
 	}
 }

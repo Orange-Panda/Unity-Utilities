@@ -32,6 +32,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Improved documentation of many public methods (especially `GameFile`)
 - ⚠️Breaking: Adjust the accessibility of many UI functions and fields
 - ⚠️Breaking: `ActionEmitter` no longer invokes `ActionsUpdated` event when an `ActionEvent` is invoked (use newly created `ActionInvoked` event if relevant)
+- ⚠️Breaking: `ConfirmationWindow` canvas field has been removed and moved to the signature of `UIFunctions.CreateConfirmationWindow`
+- ⚠️Breaking: `UIFunctions.CreateConfirmationWindow` no longer loads the confirmation window through `Resources.Load("UI/Confirmation Window")`, the prefab must be provided via argument
+- Confirmation window creation via `UIFunctions.CreateConfirmationWindow` now runs the `Close` event on previous window when creating a new window
+- Exposed `UIFunctions.CreateConfirmationWindow` creation through `MostRecentConfirmation` static property
+- Expose many `ConfirmationWindow` fields and methods to `protected` level to enable some custom behavior via inheritance
 
 ## [v2.1.0] - 2024-06-25
 

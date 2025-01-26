@@ -15,34 +15,36 @@ namespace LMirman.Utilities.UI
 	{
 		[SerializeField]
 		[Tooltip("An optional selectable component to select on the event system when this confirmation window is set initialized.")]
-		private Selectable focusSelectable;
+		protected Selectable focusSelectable;
 		[SerializeField]
 		[Tooltip("Text to automatically set when the confirmation window is initialized.")]
-		private TMP_Text titleTextMesh;
+		protected TMP_Text titleTextMesh;
 		[SerializeField]
 		[Tooltip("Text to automatically set when the confirmation window is initialized.")]
-		private TMP_Text descriptionTextMesh;
+		protected TMP_Text descriptionTextMesh;
 		[SerializeField]
 		[Tooltip("Text to automatically set when the confirmation window is initialized.")]
-		private TMP_Text submitTextMesh;
+		protected TMP_Text submitTextMesh;
 		[SerializeField]
 		[Tooltip("Text to automatically set when the confirmation window is initialized.")]
-		private TMP_Text cancelTextMesh;
+		protected TMP_Text cancelTextMesh;
 
-		private Action onSubmit;
-		private Action onCancel;
+		protected bool hasTakenAction;
+		protected bool hasRunClose;
+		protected Action onSubmit;
+		protected Action onCancel;
 
 		/// <summary>
 		/// Invoked when the confirmation window is initialized.
 		/// </summary>
 		public event Action<Request> OnInitialize = delegate { };
 
-		private void OnEnable()
+		protected virtual void OnEnable()
 		{
 			UIFunctions.AddFocus(this);
 		}
 
-		private void OnDisable()
+		protected virtual void OnDisable()
 		{
 			UIFunctions.RemoveFocus(this);
 		}
@@ -50,32 +52,56 @@ namespace LMirman.Utilities.UI
 		/// <summary>
 		/// Submit the 'positive' choice for the confirmation window.
 		/// </summary>
-		public void Submit()
+		public virtual void Submit()
 		{
+			if (hasTakenAction)
+			{
+				return;
+			}
+
+			hasTakenAction = true;
 			if (onSubmit != null)
 			{
 				onSubmit.Invoke();
 				ClearActions();
 			}
 
-			Destroy(gameObject);
+			Close();
 		}
 
 		/// <summary>
 		/// Submit the 'negative' choice for the confirmation window.
 		/// </summary>
-		public void Cancel()
+		public virtual void Cancel()
 		{
+			if (hasTakenAction)
+			{
+				return;
+			}
+
+			hasTakenAction = true;
 			if (onCancel != null)
 			{
 				onCancel.Invoke();
 				ClearActions();
 			}
 
+			Close();
+		}
+
+		public virtual void Close()
+		{
+			if (hasRunClose)
+			{
+				return;
+			}
+
+			hasRunClose = true;
+			UIFunctions.RemoveFocus(this);
 			Destroy(gameObject);
 		}
 
-		internal void Initialize(Request request)
+		public virtual void Initialize(Request request)
 		{
 			onSubmit = request.onSubmit;
 			onCancel = request.onCancel;
@@ -87,7 +113,7 @@ namespace LMirman.Utilities.UI
 			OnInitialize.Invoke(request);
 		}
 
-		private void SelectDefaultSelectable()
+		protected void SelectDefaultSelectable()
 		{
 			if (focusSelectable != null)
 			{
@@ -95,7 +121,7 @@ namespace LMirman.Utilities.UI
 			}
 		}
 
-		private void SetTextComponent(TMP_Text textMesh, string value)
+		protected void SetTextComponent(TMP_Text textMesh, string value)
 		{
 			if (textMesh != null)
 			{
@@ -103,7 +129,7 @@ namespace LMirman.Utilities.UI
 			}
 		}
 
-		private void ClearActions()
+		protected virtual void ClearActions()
 		{
 			onSubmit = null;
 			onCancel = null;
@@ -114,11 +140,6 @@ namespace LMirman.Utilities.UI
 		/// </summary>
 		public class Request
 		{
-			/// <summary>
-			/// The canvas under which the request should be created.
-			/// </summary>
-			public readonly Canvas canvas;
-
 			/// <summary>
 			/// The action to invoke when the user submits.
 			/// This could be considered the 'positive' response such as accepting a question.
@@ -168,10 +189,9 @@ namespace LMirman.Utilities.UI
 			/// <summary>
 			/// Create a new request format to send to the <see cref="UIFunctions.CreateConfirmationWindow(Request)"/>.
 			/// </summary>
-			public Request(Canvas canvas, Action onSubmit, Action onCancel, string title = "Request", string description = "Are you sure?", string submitText = "Submit",
+			public Request(Action onSubmit, Action onCancel, string title = "Request", string description = "Are you sure?", string submitText = "Submit",
 				string cancelText = "Cancel")
 			{
-				this.canvas = canvas;
 				this.onSubmit = onSubmit;
 				this.onCancel = onCancel;
 				this.title = title;
