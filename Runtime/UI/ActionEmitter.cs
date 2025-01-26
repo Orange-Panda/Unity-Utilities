@@ -7,7 +7,8 @@ using UnityEngine.Events;
 namespace LMirman.Utilities.UI
 {
 	/// <summary>
-	/// Generic way to create dynamic/contextual actions.
+	/// Component which can have generic <see cref="ActionEvent"/> assigned to list indices via <see cref="SetAction"/>.
+	/// These actions can then be displayed on UI elements with <see cref="GetAction"/> and invoked by other components through <see cref="InvokeAction"/>.
 	/// </summary>
 	/// <remarks>
 	/// There is an arbitrary limit of 32 actions that can be allocated per <see cref="ActionEmitter"/> instance.
@@ -20,9 +21,17 @@ namespace LMirman.Utilities.UI
 	public class ActionEmitter : MonoBehaviour
 	{
 		/// <summary>
-		/// Invoked when the actions list has been changed or after an action has been invoked.
+		/// Invoked when the actions list has been changed.
 		/// </summary>
+		/// <example>
+		/// This event is useful to update your UI components to display the <see cref="Actions"/>
+		/// </example>
 		public event Action ActionsUpdated = delegate { };
+
+		/// <summary>
+		/// Invoked when am <see cref="ActionEvent"/> has been invoked.
+		/// </summary>
+		public event Action<ActionEvent> ActionInvoked = delegate { };
 
 		/// <summary>
 		/// The current actions that can be invoked.
@@ -33,7 +42,7 @@ namespace LMirman.Utilities.UI
 		public List<ActionEvent> Actions { get; } = new List<ActionEvent>();
 
 		/// <summary>
-		/// Fire the <see cref="ActionsUpdated"/> event.
+		/// Manually fire the <see cref="ActionsUpdated"/> event.
 		/// </summary>
 		public void InvokeActionsUpdated()
 		{
@@ -46,18 +55,20 @@ namespace LMirman.Utilities.UI
 		/// <param name="index">The index of the action to invoke.</param>
 		public void InvokeAction(int index)
 		{
-			if (index.InBounds(Actions) && Actions[index] != null)
+			if (!index.InBounds(Actions) || Actions[index] == null)
 			{
-				Actions[index].onTrigger.Invoke();
+				return;
 			}
 
-			InvokeActionsUpdated();
+			ActionEvent actionEvent = Actions[index];
+			actionEvent.onTrigger.Invoke();
+			ActionInvoked.Invoke(actionEvent);
 		}
 
 		/// <summary>
 		/// Invoke a particular action by its index in the <see cref="Actions"/> list.
 		/// </summary>
-		/// <param name="index">The index to set the action action into.</param>
+		/// <param name="index">The index to set the action into.</param>
 		/// <param name="function">The event to trigger when the action is invoked.</param>
 		public void SetAction(int index, ActionEvent function)
 		{
@@ -89,6 +100,7 @@ namespace LMirman.Utilities.UI
 		/// </summary>
 		/// <param name="index">The index of the action to get.</param>
 		/// <returns>The <see cref="ActionEvent"/> that was found at that index, or null if no entry was present at that index.</returns>
+		[CanBeNull]
 		public ActionEvent GetAction(int index)
 		{
 			return index.InBounds(Actions) ? Actions[index] : null;
