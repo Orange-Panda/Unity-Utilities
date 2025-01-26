@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 	- Editor: `LMirman.Utilities` -> `LMirman.Utilities.Editor`
     - UI: `LMirman.Utilities` -> `LMirman.Utilities.UI`
     - Object Pool: `LMirman.Utilities` -> `LMirman.Utilities.ObjectPool`
+    - Lookup Table: `LMirman.Utilities` -> `LMirman.Utilities.LookupTable`
     - Editor Tests: `LMirman.Utilities.Tests.Editor`
     - Runtime Tests: `LMirman.Utilities.Tests.Runtime`
     - All other classes are in the `LMirman.Utilities` namespace

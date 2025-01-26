@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using System;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.LookupTable
 {
 	[PublicAPI]
 	[Serializable]

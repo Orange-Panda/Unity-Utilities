@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.LookupTable
 {
 	[PublicAPI]
 	public abstract class LookupCollectionAsset<T> : ScriptableObject where T : ILookupCollectionEntry

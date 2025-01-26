@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace LMirman.Utilities
 {
@@ -513,7 +514,7 @@ namespace LMirman.Utilities
 		#endregion
 
 		#region Error Handling
-		private void HandleError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
+		private void HandleError(object sender, ErrorEventArgs errorArgs)
 		{
 			Debug.LogWarning($"An issue was encountered when deserializing game file \"{fileName}\"! This is likely due to invalid data being provided.\n{errorArgs.ErrorContext.Error.Message}");
 			errorArgs.ErrorContext.Handled = true;

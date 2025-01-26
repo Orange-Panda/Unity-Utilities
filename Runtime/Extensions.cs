@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using System.Collections;
 using UnityEngine;
 
 namespace LMirman.Utilities
@@ -18,13 +19,13 @@ namespace LMirman.Utilities
 		/// <param name="index">The index to check within the array bounds for</param>
 		/// <param name="collection">The collection to check (typically an array or List&lt;T&gt;)</param>
 		/// <returns>True if the index is a non-negative number which is less than the collection length.</returns>
-		public static bool InBounds(this int index, System.Collections.ICollection collection)
+		public static bool InBounds(this int index, ICollection collection)
 		{
 			return index >= 0 && index < collection.Count;
 		}
 
 		/// <inheritdoc cref="InBounds(int, System.Collections.ICollection)"/>
-		public static bool InBounds(this System.Collections.ICollection collection, int index)
+		public static bool InBounds(this ICollection collection, int index)
 		{
 			return index.InBounds(collection);
 		}

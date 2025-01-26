@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using UnityEngine;
 
-namespace LMirman.Utilities
+namespace LMirman.Utilities.LookupTable
 {
 	/// <summary>
 	/// An asset based dictionary that pairs a string key with an arbitrary <see cref="T"/> object.

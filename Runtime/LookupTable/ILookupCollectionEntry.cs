@@ -1,4 +1,4 @@
-namespace LMirman.Utilities
+namespace LMirman.Utilities.LookupTable
 {
 	public interface ILookupCollectionEntry
 	{
