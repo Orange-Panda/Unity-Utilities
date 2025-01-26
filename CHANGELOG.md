@@ -4,7 +4,7 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.0.0] - UNRELEASED
+## [3.0.0] - 2025-01-25
 
 ### Added
 
@@ -26,18 +26,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
     - Editor Tests: `LMirman.Utilities.Tests.Editor`
     - Runtime Tests: `LMirman.Utilities.Tests.Runtime`
     - All other classes are in the `LMirman.Utilities` namespace
-- Update some extension methods to have `[Pure]` attribute, notifying if return value is unused (these methods have no consequences if return value unused)
-- The `InBounds` extension method now targets the `ICollection` interface allowing it to be used generically instead of just arrays and lists.
 - ⚠️Breaking: Rename `GameFile` events to no longer begin with `On` term
-- Improved documentation of many public methods (especially `GameFile`)
 - ⚠️Breaking: Adjust the accessibility of many UI functions and fields
 - ⚠️Breaking: `ActionEmitter` no longer invokes `ActionsUpdated` event when an `ActionEvent` is invoked (use newly created `ActionInvoked` event if relevant)
 - ⚠️Breaking: `ConfirmationWindow` canvas field has been removed and moved to the signature of `UIFunctions.CreateConfirmationWindow`
 - ⚠️Breaking: `UIFunctions.CreateConfirmationWindow` no longer loads the confirmation window through `Resources.Load("UI/Confirmation Window")`, the prefab must be provided via argument
+- ⚠️Breaking: Change implementation of public serialized fields in `OverlayEntry` to protected serialized fields with public get-only properties
+- Update some extension methods to have `[Pure]` attribute, notifying if return value is unused (these methods have no consequences if return value unused)
+- The `InBounds` extension method now targets the `ICollection` interface allowing it to be used generically instead of just arrays and lists.
+- Improved documentation of many public methods (especially `GameFile`)
 - Confirmation window creation via `UIFunctions.CreateConfirmationWindow` now runs the `Close` event on previous window when creating a new window
 - Exposed `UIFunctions.CreateConfirmationWindow` creation through `MostRecentConfirmation` static property
 - Expose many `ConfirmationWindow` fields and methods to `protected` level to enable some custom behavior via inheritance
-- ⚠️Breaking: Change implementation of public serialized fields in `OverlayEntry` to protected serialized fields with public get-only properties
 
 ## [v2.1.0] - 2024-06-25
 
