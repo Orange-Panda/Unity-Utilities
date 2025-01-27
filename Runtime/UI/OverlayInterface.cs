@@ -14,8 +14,10 @@ namespace LMirman.Utilities.UI
 	{
 		[Header("Overlay Interface")]
 		[Tooltip("Default selectable to highlight on Open")]
+		[SerializeField]
 		protected Selectable selectable;
 		[Tooltip("The item that is always enabled and disabled when this overlay is active.")]
+		[SerializeField]
 		protected GameObject container;
 
 		protected OverlayManager overlayManager;
