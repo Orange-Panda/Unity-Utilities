@@ -35,16 +35,15 @@ namespace LMirman.Utilities.UI
 		/// </summary>
 		public void RecalculateAspect()
 		{
-#if UNITY_EDITOR
-			// If calling this message from the editor window it is possible Start(); didn't get the components.
 			GetComponents();
-#endif
-			if (layout != null)
+			if (layout == null)
 			{
-				float height = layout.preferredHeight;
-				float width = layout.preferredWidth;
-				aspectRatioFitter.aspectRatio = Mathf.Clamp(width / height, 0.001f, 1000f);
+				return;
 			}
+
+			float height = layout.preferredHeight;
+			float width = layout.preferredWidth;
+			aspectRatioFitter.aspectRatio = Mathf.Clamp(width / height, 0.001f, 1000f);
 		}
 	}
 }
