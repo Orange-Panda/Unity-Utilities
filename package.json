@@ -1,6 +1,6 @@
 {
   "name": "com.lmirman.utilities",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "displayName": "Unity Utilities",
   "description": "An all in one package that handles many common unity development needs.",
   "hideInEditor": true,
